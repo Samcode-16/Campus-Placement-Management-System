@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Apply | CPMS{% endblock %}
+{% block page_heading %}Apply to Drive{% endblock %}
+
+{% block content %}
+<section class="panel narrow">
+    <div class="panel-heading">
+        <h2>{{ drive.title }} &middot; {{ drive.company.name }}</h2>
+        <p>{{ drive.package_lpa }} LPA &middot; apply before {{ drive.application_deadline|date:"d M Y, H:i" }}</p>
+    </div>
+    <form method="post" enctype="multipart/form-data" class="stack-form padded" novalidate>
+        {% csrf_token %}
+        <dl class="detail-list flush">
+            <div><dt>Applicant</dt><dd>{{ user.get_full_name }} ({{ student.usn }})</dd></div>
+            <div><dt>CGPA / Backlogs</dt><dd>{{ student.cgpa }} / {{ student.active_backlogs }}</dd></div>
+        </dl>
+        <div class="field">
+            <label for="{{ form.resume.id_for_label }}">{{ form.resume.label }}</label>
+            {{ form.resume }}
+            {% for error in form.resume.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+            {% if student.resume %}<span class="muted">Leave empty to use your profile resume ({{ student.resume.name }}).</span>
+            {% else %}<span class="muted">No resume on your profile, so please upload one.</span>{% endif %}
+        </div>
+        <div class="button-row">
+            <button class="primary-button" type="submit">Submit application</button>
+            <a class="reset-link" href="{% url 'recruitment:drive_detail' drive.pk %}">Cancel</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

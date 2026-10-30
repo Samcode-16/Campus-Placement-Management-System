@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Placement Drives | CPMS{% endblock %}
+{% block page_heading %}Placement Drives{% endblock %}
+
+{% block content %}
+<div class="welcome-row">
+    <div>
+        <h2>Campus Recruitment</h2>
+        <p>Explore opportunities across different sectors.</p>
+    </div>
+    {% if user.is_staff %}
+    <a class="primary-button" href="/admin/recruitment/placementdrive/add/">Add Placement Drive</a>
+    {% endif %}
+</div>
+
+<div class="filter-bar">
+    <a class="filter-link {% if not selected_category %}selected{% endif %}" href="{% url 'recruitment:placement_drives' %}">All Drives</a>
+    <a class="filter-link {% if selected_category == 'IT' %}selected{% endif %}" href="?category=IT">IT Drives</a>
+    <a class="filter-link {% if selected_category == 'CORE' %}selected{% endif %}" href="?category=CORE">Core Engineering</a>
+    <a class="filter-link {% if selected_category == 'BANKING' %}selected{% endif %}" href="?category=BANKING">Banking &amp; Finance</a>
+</div>
+
+<section class="panel">
+    <div class="panel-heading">
+        <h2>Available Placement Drives</h2>
+        <p>{{ drives|length }} drive(s) found</p>
+    </div>
+
+    {% if drives %}
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Company</th><th>Position</th><th>Category</th><th>Package (LPA)</th>
+                    <th>Minimum CGPA</th><th>Deadline</th><th>Status</th><th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for drive in drives %}
+                <tr>
+                    <td>{{ drive.company.name }}</td>
+                    <td>{{ drive.title }}</td>
+                    <td>{{ drive.get_category_display }}</td>
+                    <td>{{ drive.package_lpa }}</td>
+                    <td>{{ drive.minimum_cgpa }}</td>
+                    <td>{{ drive.application_deadline|date:"d M Y, H:i" }}</td>
+                    <td><span class="status-badge status-{{ drive.status|lower }}">{{ drive.get_status_display }}</span></td>
+                    <td>
+                        {% if user.is_staff %}
+                            <a class="text-link" href="{% url 'recruitment:drive_detail' drive.pk %}">Details</a>
+                        {% elif drive.already_applied %}
+                            <span class="status-badge status-applied">Applied</span>
+                        {% elif drive.can_apply %}
+                            <a class="primary-button small" href="{% url 'recruitment:drive_detail' drive.pk %}">View &amp; Apply</a>
+                        {% else %}
+                            <a class="text-link" href="{% url 'recruitment:drive_detail' drive.pk %}">Details</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h3>No placement drives found</h3>
+        <p>Select another category or check back later.</p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

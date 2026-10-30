@@ -1,0 +1,49 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CPMS{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'css/public.css' %}?v=3">
+</head>
+<body class="public">
+    <div class="auth-split">
+        <aside class="auth-aside {% block variant %}student{% endblock %}">
+            <a class="pub-brand light" href="{% url 'home' %}" aria-label="Back to CPMS home">
+                <span class="brand-mark">C</span>
+                <span class="pub-brand-text"><strong>CPMS</strong><small>Campus Placement Portal</small></span>
+            </a>
+            <div class="auth-aside-body">
+                <h2>{% block aside_heading %}{% endblock %}</h2>
+                <p>{% block aside_text %}{% endblock %}</p>
+                <ul class="aside-points">{% block aside_points %}{% endblock %}</ul>
+            </div>
+            <a class="aside-back" href="{% url 'home' %}">Back to the home page</a>
+        </aside>
+
+        <main class="auth-main">
+            <div class="auth-panel {% block panel_class %}{% endblock %}">
+                {% if messages %}
+                <ul class="messages">{% for message in messages %}<li class="message {{ message.tags }}">{{ message }}</li>{% endfor %}</ul>
+                {% endif %}
+                {% block content %}{% endblock %}
+                <p class="auth-legal"><a href="{% url 'privacy' %}">Privacy Policy</a> <a href="{% url 'terms' %}">Terms and Conditions</a> <a href="{% url 'dpdp' %}">DPDP Act Notice</a></p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    // Show / hide password buttons
+    document.querySelectorAll("[data-pw-toggle]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            var input = btn.parentElement.querySelector("input");
+            var show = input.type === "password";
+            input.type = show ? "text" : "password";
+            btn.classList.toggle("is-on", show);
+            btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
+        });
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{{ drive.title }} | CPMS{% endblock %}
+{% block page_heading %}Drive Details{% endblock %}
+
+{% block content %}
+<div class="welcome-row">
+    <div>
+        <h2>{{ drive.title }} &middot; {{ drive.company.name }}</h2>
+        <p>{{ drive.get_category_display }} &middot; <span class="status-badge status-{{ drive.status|lower }}">{{ drive.get_status_display }}</span></p>
+    </div>
+    <a class="text-link" href="{% url 'recruitment:placement_drives' %}">&larr; All drives</a>
+</div>
+
+<div class="two-col">
+<section class="panel">
+    <div class="panel-heading"><h2>About the role</h2></div>
+    <div class="padded"><p class="prose">{{ drive.job_description|linebreaksbr }}</p></div>
+    {% if drive.company.website %}<p class="padded muted">Company: <a class="text-link" href="{{ drive.company.website }}" target="_blank" rel="noopener">{{ drive.company.website }}</a></p>{% endif %}
+</section>
+
+<section class="panel">
+    <div class="panel-heading"><h2>Drive information</h2></div>
+    <dl class="detail-list">
+        <div><dt>Package</dt><dd>{{ drive.package_lpa }} LPA</dd></div>
+        <div><dt>Vacancies</dt><dd>{{ drive.vacancies }}</dd></div>
+        <div><dt>Minimum CGPA</dt><dd>{{ drive.minimum_cgpa }}</dd></div>
+        <div><dt>Max. active backlogs</dt><dd>{{ drive.maximum_backlogs }}</dd></div>
+        <div><dt>Eligible departments</dt><dd>{% for d in drive.eligible_departments.all %}{{ d.code }}{% if not forloop.last %}, {% endif %}{% empty %}All departments{% endfor %}</dd></div>
+        <div><dt>Apply by</dt><dd>{{ drive.application_deadline|date:"d M Y, H:i" }}</dd></div>
+        <div><dt>Drive date</dt><dd>{{ drive.drive_date|date:"d M Y, H:i" }}</dd></div>
+    </dl>
+</section>
+</div>
+
+{% if not user.is_staff %}
+<section class="panel spaced">
+    <div class="panel-heading"><h2>Your application</h2></div>
+    <div class="padded">
+        {% if application and application.status != 'WITHDRAWN' %}
+            <p>You applied on {{ application.applied_at|date:"d M Y" }}. Current status:
+               <span class="status-badge status-{{ application.status|lower }}">{{ application.get_status_display }}</span></p>
+            <a class="text-link" href="{% url 'recruitment:my_applications' %}">Go to My Applications</a>
+        {% elif issues %}
+            <p><strong>You are not eligible for this drive:</strong></p>
+            <ul class="issue-list">{% for i in issues %}<li>{{ i }}</li>{% endfor %}</ul>
+        {% elif not drive.is_accepting_applications %}
+            <p>This drive is not accepting applications (closed, not yet open, or past its deadline).</p>
+        {% elif can_apply %}
+            <p>You meet all the eligibility criteria for this drive.</p>
+            <a class="primary-button" href="{% url 'recruitment:apply' drive.pk %}">{% if application %}Re-apply{% else %}Apply now{% endif %}</a>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}

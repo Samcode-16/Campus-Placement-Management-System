@@ -1,0 +1,102 @@
+
+{% extends "base.html" %}
+
+{% block title %}Training Programs | CPMS{% endblock %}
+{% block page_heading %}Training Programs{% endblock %}
+
+{% block content %}
+
+<div class="welcome-row">
+    <div>
+        <h2>Training &amp; Development</h2>
+        <p>Manage skill-building programs and student development.</p>
+    </div>
+    {% if user.is_staff %}
+    <a class="primary-button" href="/admin/training/trainingprogram/add/">
+        Add Training Program
+    </a>
+    {% endif %}
+</div>
+
+<form method="get" class="training-filters">
+    <div class="filter-field">
+        <label for="mode">Delivery Mode</label>
+        <select id="mode" name="mode">
+            <option value="">All Modes</option>
+            {% for value, label in mode_choices %}
+                <option value="{{ value }}"
+                    {% if selected_mode == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="filter-field">
+        <label for="status">Program Status</label>
+        <select id="status" name="status">
+            <option value="">All Statuses</option>
+            {% for value, label in status_choices %}
+                <option value="{{ value }}"
+                    {% if selected_status == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button type="submit" class="primary-button">Apply Filters</button>
+    <a class="reset-link" href="/training/">Reset</a>
+</form>
+
+<section class="panel">
+    <div class="panel-heading">
+        <h2>Training Catalogue</h2>
+        <p>{{ programs|length }} program(s) found</p>
+    </div>
+
+    {% if programs %}
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Program</th>
+                    <th>Trainer</th>
+                    <th>Mode</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Capacity</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for program in programs %}
+                <tr>
+                    <td>{{ program.title }}</td>
+                    <td>{{ program.trainer }}</td>
+                    <td>{{ program.get_mode_display }}</td>
+                    <td>{{ program.start_date|date:"d M Y" }}</td>
+                    <td>{{ program.end_date|date:"d M Y" }}</td>
+                    <td>{{ program.capacity }}</td>
+                    <td>
+                        <span class="status-badge status-{{ program.status|lower }}">
+                            {{ program.get_status_display }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h3>No training programs found</h3>
+        <p>Add a program or change the filters to see available training.</p>
+        <a class="text-link" href="/admin/training/trainingprogram/add/">
+            Create a training program
+        </a>
+    </div>
+    {% endif %}
+</section>
+
+{% endblock %}

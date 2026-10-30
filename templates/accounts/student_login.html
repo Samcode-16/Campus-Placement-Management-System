@@ -1,0 +1,32 @@
+{% extends "auth_base.html" %}
+{% block title %}Student login | CPMS{% endblock %}
+{% block variant %}student{% endblock %}
+{% block aside_heading %}Your next offer starts here.{% endblock %}
+{% block aside_text %}Sign in to see the drives you are eligible for and follow every application from first click to offer letter.{% endblock %}
+{% block aside_points %}
+<li>Apply to eligible drives with one resume</li>
+<li>Track shortlists, interview rounds and offers</li>
+<li>Keep your profile and resume up to date</li>
+{% endblock %}
+
+{% block content %}
+<h1 class="auth-heading">Student login</h1>
+<p class="auth-lead">Sign in with the account you registered with.</p>
+
+<form method="post" class="stack-form" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+    <div class="form-alert" role="alert">{{ form.non_field_errors.0 }}</div>
+    {% endif %}
+    {% include "accounts/_field.html" with field=form.username %}
+    {% include "accounts/_field.html" with field=form.password password=True %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="btn btn-teal btn-lg btn-block" type="submit">Log in</button>
+</form>
+
+<div class="auth-links">
+    <p>New to CPMS? <a class="text-link" href="{% url 'accounts:register' %}">Create a student account</a></p>
+    <p>Forgot your password? Ask the placement office to reset it.</p>
+    <p>Placement officer? <a class="text-link" href="{% url 'accounts:staff_login' %}">Use the officer login</a></p>
+</div>
+{% endblock %}

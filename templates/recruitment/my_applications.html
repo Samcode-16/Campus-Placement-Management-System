@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}My Applications | CPMS{% endblock %}
+{% block page_heading %}My Applications{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="panel-heading"><h2>Application tracker</h2><p>{{ applications|length }} application(s)</p></div>
+    {% if applications %}
+    <div class="table-wrapper"><table>
+        <thead><tr><th>Company</th><th>Role</th><th>Applied</th><th>Status</th><th>Interview rounds</th><th>Offer</th><th></th></tr></thead>
+        <tbody>
+        {% for a in applications %}
+        <tr>
+            <td>{{ a.drive.company.name }}</td>
+            <td><a class="text-link" href="{% url 'recruitment:drive_detail' a.drive.pk %}">{{ a.drive.title }}</a></td>
+            <td>{{ a.applied_at|date:"d M Y" }}</td>
+            <td><span class="status-badge status-{{ a.status|lower }}">{{ a.get_status_display }}</span></td>
+            <td>
+                {% for r in a.interview_rounds.all %}
+                    <div>{{ r.get_round_type_display }} &middot; {{ r.scheduled_at|date:"d M, H:i" }}
+                    <span class="status-badge status-{{ r.result|lower }}">{{ r.get_result_display }}</span></div>
+                {% empty %}<span class="muted">None yet</span>{% endfor %}
+            </td>
+            <td>{% if a.offer %}{{ a.offer.offered_package_lpa }} LPA{% else %}<span class="muted">&mdash;</span>{% endif %}</td>
+            <td>
+                {% if a.status == 'APPLIED' or a.status == 'SHORTLISTED' %}
+                <form method="post" action="{% url 'recruitment:withdraw' a.pk %}" onsubmit="return confirm('Withdraw this application?');">
+                    {% csrf_token %}<button class="link-button" type="submit">Withdraw</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody></table></div>
+    {% else %}
+    <div class="empty-state"><h3>No applications yet</h3><p>Find a drive and apply to start tracking it here.</p>
+        <a class="primary-button" href="{% url 'recruitment:placement_drives' %}">Browse drives</a></div>
+    {% endif %}
+</section>
+{% endblock %}

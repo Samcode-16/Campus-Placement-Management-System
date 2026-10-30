@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}My Dashboard | CPMS{% endblock %}
+{% block page_heading %}My Dashboard{% endblock %}
+
+{% block content %}
+<div class="welcome-row">
+    <div>
+        <h2>Hello, {{ user.first_name|default:user.username }}</h2>
+        <p>{{ student.usn }} &middot; {{ student.department.name }} &middot; CGPA {{ student.cgpa }} &middot; {{ student.active_backlogs }} active backlog(s)</p>
+    </div>
+    <a class="primary-button" href="{% url 'recruitment:placement_drives' %}">Browse Drives</a>
+</div>
+
+<div class="stats-grid four">
+    <article class="stat-card"><span class="stat-label">Applications</span><strong class="stat-number">{{ total_applications }}</strong><span class="stat-note">Submitted so far</span></article>
+    <article class="stat-card"><span class="stat-label">Shortlisted</span><strong class="stat-number">{{ shortlisted }}</strong><span class="stat-note">Moving to interviews</span></article>
+    <article class="stat-card"><span class="stat-label">Selected</span><strong class="stat-number">{{ selected }}</strong><span class="stat-note">Offers in progress</span></article>
+    <article class="stat-card"><span class="stat-label">Open for you</span><strong class="stat-number">{{ eligible_open_count }}</strong><span class="stat-note">Eligible drives you have not applied to</span></article>
+</div>
+
+<div class="two-col">
+<section class="panel">
+    <div class="panel-heading"><h2>Drives you can apply to</h2><p>Open now and matching your CGPA, backlogs and department.</p></div>
+    {% if eligible_open %}
+    <div class="table-wrapper"><table>
+        <thead><tr><th>Company</th><th>Role</th><th>Package</th><th>Deadline</th><th></th></tr></thead>
+        <tbody>{% for d in eligible_open %}
+        <tr><td>{{ d.company.name }}</td><td>{{ d.title }}</td><td>{{ d.package_lpa }} LPA</td><td>{{ d.application_deadline|date:"d M, H:i" }}</td>
+            <td><a class="text-link" href="{% url 'recruitment:drive_detail' d.pk %}">View</a></td></tr>
+        {% endfor %}</tbody></table></div>
+    {% else %}
+    <div class="empty-state"><h3>Nothing to apply to right now</h3><p>New drives will appear here when they open.</p></div>
+    {% endif %}
+</section>
+
+<section class="panel">
+    <div class="panel-heading"><h2>Upcoming interview rounds</h2><p>Scheduled rounds that are still pending.</p></div>
+    {% if upcoming_rounds %}
+    <div class="table-wrapper"><table>
+        <thead><tr><th>Company</th><th>Round</th><th>When</th><th>Venue</th></tr></thead>
+        <tbody>{% for r in upcoming_rounds %}
+        <tr><td>{{ r.application.drive.company.name }}</td><td>{{ r.get_round_type_display }}</td><td>{{ r.scheduled_at|date:"d M, H:i" }}</td><td>{{ r.venue|default:"TBA" }}</td></tr>
+        {% endfor %}</tbody></table></div>
+    {% else %}
+    <div class="empty-state"><h3>No upcoming rounds</h3><p>Shortlisted applications will show their schedule here.</p></div>
+    {% endif %}
+</section>
+</div>
+
+<section class="panel spaced">
+    <div class="panel-heading"><h2>Recent applications</h2><p><a class="text-link" href="{% url 'recruitment:my_applications' %}">View all</a></p></div>
+    {% if recent_applications %}
+    <div class="table-wrapper"><table>
+        <thead><tr><th>Company</th><th>Role</th><th>Applied</th><th>Status</th></tr></thead>
+        <tbody>{% for a in recent_applications %}
+        <tr><td>{{ a.drive.company.name }}</td><td>{{ a.drive.title }}</td><td>{{ a.applied_at|date:"d M Y" }}</td>
+            <td><span class="status-badge status-{{ a.status|lower }}">{{ a.get_status_display }}</span></td></tr>
+        {% endfor %}</tbody></table></div>
+    {% else %}
+    <div class="empty-state"><h3>You have not applied yet</h3><p>Browse placement drives and apply to get started.</p></div>
+    {% endif %}
+</section>
+{% endblock %}

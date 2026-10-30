@@ -1,0 +1,123 @@
+{% extends "public_base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div class="pub-wrap hero-grid">
+        <div class="hero-copy">
+            <h1>Your placement journey, tracked from first application to offer.</h1>
+            <p class="hero-sub">CPMS brings campus drives, applications, interviews and training into one portal, so students always know where they stand and the placement office always knows who is next.</p>
+            <div class="hero-cta">
+                <a class="btn btn-teal btn-lg" href="{% url 'accounts:login' %}">Student login</a>
+                <a class="btn btn-outline btn-lg" href="{% url 'accounts:staff_login' %}">Placement officer login</a>
+            </div>
+            <p class="hero-note">New student? <a class="text-link" href="{% url 'accounts:register' %}">Create your account</a></p>
+        </div>
+
+        <figure class="tracker" aria-label="Example of an application tracker">
+            <figcaption>Example application tracker</figcaption>
+            <div class="tracker-card">
+                <div class="tracker-head">
+                    <span class="company-mark">I</span>
+                    <div>
+                        <strong>Systems Engineer</strong>
+                        <span>Infosys</span>
+                    </div>
+                    <span class="status-badge status-shortlisted">Shortlisted</span>
+                </div>
+                <ol class="timeline">
+                    <li class="done"><span>Applied</span><small>Resume submitted</small></li>
+                    <li class="done"><span>Shortlisted</span><small>Cleared aptitude test</small></li>
+                    <li class="current"><span>Technical interview</span><small>18 Oct, 11:00 in Computer Lab 2</small></li>
+                    <li><span>HR interview</span><small>To be scheduled</small></li>
+                    <li><span>Offer</span><small>Pending</small></li>
+                </ol>
+            </div>
+        </figure>
+    </div>
+</section>
+
+<section class="stats-band" aria-label="Portal statistics">
+    <dl class="pub-wrap stats-row">
+        <div><dt>Registered students</dt><dd>{{ stats.students }}</dd></div>
+        <div><dt>Partner companies</dt><dd>{{ stats.companies }}</dd></div>
+        <div><dt>Drives open now</dt><dd>{{ stats.open_drives }}</dd></div>
+        <div><dt>Offers recorded</dt><dd>{{ stats.offers }}</dd></div>
+    </dl>
+</section>
+
+<section class="section">
+    <div class="pub-wrap">
+        <div class="section-head">
+            <div>
+                <h2>Open drives right now</h2>
+                <p>Log in to check your eligibility and apply.</p>
+            </div>
+            <a class="text-link" href="{% url 'accounts:login' %}">Log in to apply</a>
+        </div>
+
+        {% if featured_drives %}
+        <ul class="drive-list">
+            {% for drive in featured_drives %}
+            <li class="drive-row">
+                <span class="company-mark">{{ drive.company.name|slice:":1" }}</span>
+                <div class="drive-main">
+                    <strong>{{ drive.title }}</strong>
+                    <span>{{ drive.company.name }}</span>
+                </div>
+                <span class="drive-cat">{{ drive.get_category_display }}</span>
+                <span class="drive-pay">{{ drive.package_lpa }} LPA</span>
+                <span class="drive-close">Closes {{ drive.application_deadline|date:"j M" }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="empty-state panel"><h3>No drives are open right now</h3><p>New drives appear here as soon as the placement office publishes them.</p></div>
+        {% endif %}
+    </div>
+</section>
+
+<section class="section section-tint">
+    <div class="pub-wrap">
+        <div class="section-head"><div><h2>Choose how you sign in</h2><p>Students and the placement office get separate, purpose-built workspaces.</p></div></div>
+        <div class="role-split">
+            <article class="role-panel student">
+                <h3>For students</h3>
+                <ul class="check-list">
+                    <li>See only the drives you are eligible for</li>
+                    <li>Apply once with your resume and withdraw if plans change</li>
+                    <li>Follow shortlists, interview rounds and offers</li>
+                    <li>Browse training programs that prepare you for drives</li>
+                </ul>
+                <div class="role-actions">
+                    <a class="btn btn-teal" href="{% url 'accounts:login' %}">Student login</a>
+                    <a class="btn btn-outline" href="{% url 'accounts:register' %}">Register</a>
+                </div>
+            </article>
+            <article class="role-panel staff">
+                <h3>For the placement office</h3>
+                <ul class="check-list">
+                    <li>Publish drives with CGPA, backlog and department rules</li>
+                    <li>Review applications and shortlist, select or reject in one click</li>
+                    <li>Watch live counts of students, drives and applications</li>
+                    <li>Manage companies, interviews, offers and training records</li>
+                </ul>
+                <div class="role-actions">
+                    <a class="btn btn-navy" href="{% url 'accounts:staff_login' %}">Placement officer login</a>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="pub-wrap">
+        <div class="section-head"><div><h2>How it works</h2><p>From registration to offer letter in four steps.</p></div></div>
+        <ol class="steps">
+            <li><strong>Register</strong><span>Create an account with your USN, department, CGPA and backlogs.</span></li>
+            <li><strong>Apply</strong><span>Open a drive, check your eligibility and submit your resume.</span></li>
+            <li><strong>Get shortlisted</strong><span>The placement office reviews applications and schedules interview rounds.</span></li>
+            <li><strong>Receive an offer</strong><span>Results and offers appear in your tracker as soon as they are recorded.</span></li>
+        </ol>
+    </div>
+</section>
+{% endblock %}

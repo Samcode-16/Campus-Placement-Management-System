@@ -1,0 +1,149 @@
+{% extends "legal/legal_base.html" %}
+{% comment %}
+  Template text. Have {{ INSTITUTION_NAME }}'s legal adviser review it before real use.
+  Names and contact details come from settings.py (INSTITUTION_NAME, PRIVACY_CONTACT_EMAIL, ...).
+{% endcomment %}
+{% block doc_title %}Privacy Policy{% endblock %}
+{% block doc_heading %}Privacy Policy{% endblock %}
+
+{% block toc %}
+<a href="#summary">The short version</a>
+<a href="#who">1. Who we are</a>
+<a href="#data">2. Data we collect</a>
+<a href="#use">3. How and why we use it</a>
+<a href="#sharing">4. Who we share it with</a>
+<a href="#transfers">5. Transfers outside India</a>
+<a href="#retention">6. How long we keep it</a>
+<a href="#rights">7. Your rights (DPDP Act)</a>
+<a href="#gdpr">8. If you are in the EEA or UK (GDPR)</a>
+<a href="#security">9. Security and breaches</a>
+<a href="#cookies">10. Cookies</a>
+<a href="#automated">11. Automated checks</a>
+<a href="#minors">12. Under 18s</a>
+<a href="#changes">13. Changes</a>
+<a href="#contact">14. Contact and complaints</a>
+{% endblock %}
+
+{% block legal_content %}
+<section id="summary" class="callout">
+    <h2>The short version</h2>
+    <ul>
+        <li>We collect only what is needed to run campus placements: your account, academic details, resume, applications and training records.</li>
+        <li>Placement officers see your data. Companies see your profile and resume <strong>only for drives you apply to</strong>.</li>
+        <li>We never sell your data and we do not use advertising or tracking cookies.</li>
+        <li>You can see, correct, erase or export your data and withdraw consent by emailing <a class="text-link" href="mailto:{{ PRIVACY_CONTACT_EMAIL }}">{{ PRIVACY_CONTACT_EMAIL }}</a>. If we do not resolve it, you can complain to the Data Protection Board of India.</li>
+    </ul>
+</section>
+
+<p>This Privacy Policy explains how the placement cell of <strong>{{ INSTITUTION_NAME }}</strong> ("we", "us") collects, uses, shares and protects personal data when you use the Campus Placement and Recruitment Portal ("CPMS", "the portal"). It follows India's <strong>Digital Personal Data Protection Act, 2023</strong> (the "DPDP Act") and the DPDP Rules, 2025. For people in the European Economic Area (EEA) or United Kingdom, section 8 explains your rights under the <strong>General Data Protection Regulation</strong> ("GDPR"). Please also read our <a class="text-link" href="{% url 'dpdp' %}">DPDP Act Notice</a>, which lists each item of data and its purpose.</p>
+
+<h2 id="who">1. Who we are</h2>
+<p>{{ INSTITUTION_NAME }} is the <strong>Data Fiduciary</strong> under the DPDP Act and the <strong>data controller</strong> under the GDPR. We decide why and how your personal data is used in the portal. You are the <strong>Data Principal</strong> (or "data subject").</p>
+<p>Address: {{ INSTITUTION_ADDRESS }}<br>Privacy contact: <a class="text-link" href="mailto:{{ PRIVACY_CONTACT_EMAIL }}">{{ PRIVACY_CONTACT_EMAIL }}</a><br>Grievance officer: {{ GRIEVANCE_OFFICER }}</p>
+<p>This policy applies to students who register on the portal.</p>
+
+<h2 id="data">2. Data we collect</h2>
+<table>
+    <thead><tr><th>Category</th><th>Examples</th><th>Where it comes from</th></tr></thead>
+    <tbody>
+        <tr><td>Account data</td><td>Name, email address, username, password (stored only as a one-way hash)</td><td>You, at registration</td></tr>
+        <tr><td>Academic data</td><td>USN or register number, department, graduation year, CGPA, active backlogs</td><td>You, and the placement office when it corrects records</td></tr>
+        <tr><td>Contact data</td><td>Phone number (optional)</td><td>You</td></tr>
+        <tr><td>Resume</td><td>The PDF or Word file you upload, and anything written in it</td><td>You</td></tr>
+        <tr><td>Placement data</td><td>Applications, status (applied, shortlisted, selected, rejected, withdrawn), interview rounds, results, remarks, offers</td><td>You and the placement office</td></tr>
+        <tr><td>Training data</td><td>Programs joined, attendance, assessment scores</td><td>The placement office and trainers</td></tr>
+        <tr><td>Consent records</td><td>The date and version of the Terms and policies you accepted</td><td>Created when you register</td></tr>
+        <tr><td>Technical data</td><td>Session and security cookies, IP address and browser type in server logs</td><td>Your device</td></tr>
+    </tbody>
+</table>
+<p>We do not ask for sensitive details such as health, religion, caste or biometric data. Please do not put them in your resume unless you want companies to see them.</p>
+
+<h2 id="use">3. How and why we use it</h2>
+<table>
+    <thead><tr><th>Purpose</th><th>Basis under the DPDP Act</th><th>Basis under the GDPR</th></tr></thead>
+    <tbody>
+        <tr><td>Creating your account, checking eligibility for drives, processing applications</td><td>Your consent (s.6), and use for the purpose for which you voluntarily gave the data (s.7(a))</td><td>Contract, or steps before a contract (Art. 6(1)(b))</td></tr>
+        <tr><td>Sharing your profile and resume with companies for drives you apply to</td><td>Your consent (s.6)</td><td>Consent (Art. 6(1)(a))</td></tr>
+        <tr><td>Scheduling interviews, recording results and offers, running training programs</td><td>Your consent (s.6) and s.7(a)</td><td>Contract and legitimate interests (Art. 6(1)(b) and (f))</td></tr>
+        <tr><td>Keeping the portal secure, preventing misuse, keeping logs</td><td>Reasonable security safeguards (s.8(5)) and the Rules</td><td>Legitimate interests (Art. 6(1)(f))</td></tr>
+        <tr><td>Keeping proof of your consent and meeting legal duties</td><td>Compliance with law (s.7)</td><td>Legal obligation (Art. 6(1)(c))</td></tr>
+    </tbody>
+</table>
+<p>We use your data only for these purposes. If we want to use it for something new, we will tell you and ask for your consent first.</p>
+
+<h2 id="sharing">4. Who we share it with</h2>
+<ul>
+    <li><strong>Placement officers and authorised staff</strong> of {{ INSTITUTION_NAME }}, who need your data to run placements. Access is limited by role.</li>
+    <li><strong>Companies and recruiters</strong>, but only for a drive you apply to. They receive your name, contact details, academic details, resume and, where relevant, interview results. They do not see your data for drives you did not apply to. We ask companies to use it only for hiring for that drive, to keep it secure and to delete it when they no longer need it.</li>
+    <li><strong>Service providers</strong> that host or support the portal (for example hosting and email providers). They act only on our instructions under a contract, as the DPDP Act requires of Data Processors.</li>
+    <li><strong>Authorities</strong>, when the law requires it or to protect rights and safety.</li>
+</ul>
+<p>We do <strong>not</strong> sell your personal data and we do not share it for advertising. You can ask us for the names of the organisations we have shared your data with (see section 7).</p>
+
+<h2 id="transfers">5. Transfers outside India</h2>
+<p>The portal is operated from India. The DPDP Act allows personal data to be transferred outside India except to countries the Government of India restricts. If a company or provider outside India receives your data, we share only what is needed. If you are in the EEA or UK, we also use safeguards such as the European Commission's Standard Contractual Clauses.</p>
+
+<h2 id="retention">6. How long we keep it</h2>
+<table>
+    <thead><tr><th>Data</th><th>Kept for</th></tr></thead>
+    <tbody>
+        <tr><td>Account, academic and contact data</td><td>While you are a student and for up to {{ DATA_RETENTION_YEARS }} years after your graduation year, so we can verify placement records</td></tr>
+        <tr><td>Applications, interviews and offers</td><td>Up to {{ DATA_RETENTION_YEARS }} years after the drive, for placement statistics and audits</td></tr>
+        <tr><td>Resumes</td><td>Until you replace them, ask us to delete them, or your account is deleted</td></tr>
+        <tr><td>Server and access logs</td><td>At least one year, as the DPDP Rules require for security and breach investigation</td></tr>
+        <tr><td>Consent records</td><td>As long as your account exists and for as long as needed to prove your consent</td></tr>
+    </tbody>
+</table>
+<p>After these periods we erase the data or anonymise it so that it can no longer identify you. Anonymised statistics (for example the percentage of students placed) may be kept. We keep data longer only if another law requires it.</p>
+
+<h2 id="rights">7. Your rights (DPDP Act)</h2>
+<p>As a Data Principal you have the right to:</p>
+<ul>
+    <li><strong>Access information</strong>: a summary of the personal data we process and what we do with it, and the names of organisations we have shared it with.</li>
+    <li><strong>Correct, complete and update</strong> your data. You can edit your phone number and resume yourself on your profile page. For your name, USN, department, CGPA or backlogs, ask the placement office.</li>
+    <li><strong>Erase</strong> your data when it is no longer needed for its purpose or you withdraw consent, unless the law requires us to keep it.</li>
+    <li><strong>Withdraw consent</strong> at any time, as easily as you gave it. This does not affect what we did before. If you withdraw consent to share your profile with companies, you can no longer apply to drives.</li>
+    <li><strong>Grievance redressal</strong>: raise a complaint with us and get an answer.</li>
+    <li><strong>Nominate</strong> another person to exercise these rights if you die or become unable to.</li>
+</ul>
+<p><strong>How to use your rights:</strong> email <a class="text-link" href="mailto:{{ PRIVACY_CONTACT_EMAIL }}">{{ PRIVACY_CONTACT_EMAIL }}</a> from your registered address. We may ask you to confirm your identity. We aim to reply within 30 days and will always answer a grievance within 90 days at the most. There is no charge. The DPDP Act also lists duties of a Data Principal (section 15), described in our <a class="text-link" href="{% url 'dpdp' %}#duties">DPDP Act Notice</a>.</p>
+
+<h2 id="gdpr">8. If you are in the EEA or UK (GDPR)</h2>
+<p>If the GDPR applies to you, the legal bases in section 3 apply, and you also have the right to:</p>
+<ul>
+    <li><strong>access</strong> your personal data and receive a copy;</li>
+    <li><strong>rectify</strong> inaccurate data and complete incomplete data;</li>
+    <li><strong>erase</strong> your data ("right to be forgotten") in the cases the GDPR lists;</li>
+    <li><strong>restrict</strong> processing, and <strong>object</strong> to processing based on our legitimate interests;</li>
+    <li><strong>data portability</strong>: receive the data you gave us in a common, machine-readable format;</li>
+    <li><strong>withdraw consent</strong> at any time; and</li>
+    <li><strong>lodge a complaint</strong> with your local data protection supervisory authority.</li>
+</ul>
+<p>Use the same email contact as in section 7. We will reply within one month, which we may extend by up to two further months for complex requests.</p>
+
+<h2 id="security">9. Security and breaches</h2>
+<ul>
+    <li>Passwords are stored as salted one-way hashes, never as plain text.</li>
+    <li>Students and placement officers have separate logins, and every page checks your role before showing data.</li>
+    <li>Forms are protected against cross-site request forgery, and uploaded resumes are limited to PDF, DOC or DOCX files up to 2 MB.</li>
+    <li>In production the portal must be served over HTTPS, and access to the database and uploaded files is limited to authorised staff.</li>
+    <li>We keep access logs so that we can detect and investigate unauthorised access.</li>
+</ul>
+<p>No system is perfectly secure. If a personal data breach happens, we will tell the affected students without delay and report it to the Data Protection Board of India as the DPDP Rules require, and, if the GDPR applies, to the relevant supervisory authority within 72 hours where required.</p>
+
+<h2 id="cookies">10. Cookies</h2>
+<p>The portal uses only the cookies it needs to work: a <code>sessionid</code> cookie that keeps you logged in and a <code>csrftoken</code> cookie that protects forms. We do not use analytics, advertising or tracking cookies, so there is no cookie banner to accept. You can block cookies in your browser, but then you cannot log in.</p>
+
+<h2 id="automated">11. Automated checks</h2>
+<p>When you open a drive, the portal automatically compares your CGPA, backlogs and department with the drive's published rules and tells you whether you can apply. This is a rule-based check, not profiling. Decisions to shortlist, select or reject you are made by people (placement officers and the company). If you think an eligibility result is wrong, ask the placement office to review it.</p>
+
+<h2 id="minors">12. Under 18s</h2>
+<p>The portal is for students who are 18 or older. The DPDP Act requires verifiable consent from a parent or lawful guardian before we process the data of anyone under 18, and we may ask for proof. We do not track or monitor children's behaviour and we do not show targeted advertising.</p>
+
+<h2 id="changes">13. Changes to this policy</h2>
+<p>We may update this policy. The version number and date at the top show the latest update. If a change affects how we use your data in a significant way, we will tell you through the portal and, where the law requires, ask for your consent again.</p>
+
+<h2 id="contact">14. Contact and complaints</h2>
+<p>Please contact us first at <a class="text-link" href="mailto:{{ PRIVACY_CONTACT_EMAIL }}">{{ PRIVACY_CONTACT_EMAIL }}</a> or write to the Grievance Officer at {{ INSTITUTION_ADDRESS }}. We will try to resolve your concern promptly.</p>
+<p>If you are not satisfied, you may complain to the <strong>Data Protection Board of India</strong> under the DPDP Act, or, if you are in the EEA or UK, to your local data protection supervisory authority.</p>
+{% endblock %}

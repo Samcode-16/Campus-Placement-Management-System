@@ -1,0 +1,84 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CPMS: campus placement and recruitment portal for students and the placement office.">
+    <title>{% block title %}CPMS | Campus Placement & Recruitment Portal{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'css/public.css' %}?v=3">
+</head>
+<body class="public">
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="pub-header">
+        <div class="pub-header-inner">
+            <a class="pub-brand" href="{% url 'home' %}" aria-label="CPMS home">
+                <span class="brand-mark">C</span>
+                <span class="pub-brand-text"><strong>CPMS</strong><small>Campus Placement Portal</small></span>
+            </a>
+            <nav class="pub-actions" aria-label="Sign in">
+                {% if user.is_authenticated %}
+                    <a class="btn btn-teal" href="{% url 'home' %}">Go to my dashboard</a>
+                {% else %}
+                    <a class="btn btn-ghost" href="{% url 'accounts:staff_login' %}">Officer login</a>
+                    <a class="btn btn-teal" href="{% url 'accounts:login' %}">Student login</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    {% if messages %}
+    <div class="pub-messages">
+        <ul class="messages">{% for message in messages %}<li class="message {{ message.tags }}">{{ message }}</li>{% endfor %}</ul>
+    </div>
+    {% endif %}
+
+    <main id="main">{% block content %}{% endblock %}</main>
+
+    <footer class="site-footer">
+        <div class="pub-wrap site-footer-grid">
+            <div class="sf-brand">
+                <a class="pub-brand light" href="{% url 'home' %}" aria-label="CPMS home">
+                    <span class="brand-mark">C</span>
+                    <span class="pub-brand-text"><strong>CPMS</strong><small>Campus Placement Portal</small></span>
+                </a>
+                <p>One portal for campus drives, applications, interviews and training, for students and the placement office.</p>
+            </div>
+
+            <nav class="sf-col" aria-label="Sign in">
+                <h2>Sign in</h2>
+                <ul>
+                    <li><a href="{% url 'accounts:login' %}">Student login</a></li>
+                    <li><a href="{% url 'accounts:register' %}">Create a student account</a></li>
+                    <li><a href="{% url 'accounts:staff_login' %}">Placement officer login</a></li>
+                </ul>
+            </nav>
+
+            <nav class="sf-col" aria-label="Legal">
+                <h2>Legal</h2>
+                <ul>
+                    <li><a href="{% url 'privacy' %}">Privacy Policy</a></li>
+                    <li><a href="{% url 'terms' %}">Terms and Conditions</a></li>
+                    <li><a href="{% url 'dpdp' %}">DPDP Act Notice</a></li>
+                </ul>
+            </nav>
+
+            <div class="sf-col">
+                <h2>Contact</h2>
+                <ul class="sf-contact">
+                    <li class="sf-mail"><a href="mailto:{{ PRIVACY_CONTACT_EMAIL }}">{{ PRIVACY_CONTACT_EMAIL }}</a></li>
+                    <li class="sf-pin"><address>{{ INSTITUTION_ADDRESS }}</address></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="site-footer-bar">
+            <div class="pub-wrap site-footer-bar-inner">
+                <p>&copy; {% now "Y" %} {{ INSTITUTION_NAME }}. All rights reserved.</p>
+                <p>Built with Django by Samudyatha K Bhat, 5th semester BCA (Reg. No. 24UG00225)</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

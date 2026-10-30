@@ -1,0 +1,88 @@
+{% extends "legal/legal_base.html" %}
+{% comment %}Template text. Have {{ INSTITUTION_NAME }}'s legal adviser review it before real use.{% endcomment %}
+{% block doc_title %}Terms and Conditions{% endblock %}
+{% block doc_heading %}Terms and Conditions{% endblock %}
+
+{% block toc %}
+<a href="#accept">1. Accepting these terms</a>
+<a href="#who">2. Who can register</a>
+<a href="#account">3. Your account</a>
+<a href="#info">4. Accurate information</a>
+<a href="#process">5. The placement process</a>
+<a href="#conduct">6. Acceptable use</a>
+<a href="#content">7. Your resume and content</a>
+<a href="#privacy">8. Privacy</a>
+<a href="#suspend">9. Suspension and closing</a>
+<a href="#disclaimer">10. Disclaimers</a>
+<a href="#liability">11. Liability</a>
+<a href="#law">12. Governing law</a>
+<a href="#changes">13. Changes</a>
+{% endblock %}
+
+{% block legal_content %}
+<p>These Terms and Conditions ("Terms") are an agreement between you and <strong>{{ INSTITUTION_NAME }}</strong> ("we", "us") about your use of the Campus Placement and Recruitment Portal ("CPMS", "the portal"). Please read them carefully.</p>
+
+<h2 id="accept">1. Accepting these terms</h2>
+<p>You accept these Terms when you tick the box and create an account, and each time you use the portal. If you do not agree, please do not register. We record the date and version of the Terms you accepted.</p>
+
+<h2 id="who">2. Who can register</h2>
+<ul>
+    <li>You must be a student of {{ INSTITUTION_NAME }} who is eligible to take part in campus placements.</li>
+    <li>You must be 18 or older, or have a parent or guardian's consent if you are younger.</li>
+    <li>One person, one account. Do not register on behalf of someone else.</li>
+</ul>
+
+<h2 id="account">3. Your account</h2>
+<ul>
+    <li>Choose a strong password and keep it secret. You are responsible for what happens under your account.</li>
+    <li>Tell the placement office straight away if you think someone else has used your account.</li>
+    <li>Do not share your login or let another person apply on your behalf.</li>
+</ul>
+
+<h2 id="info">4. Accurate information</h2>
+<ul>
+    <li>All details you give, including your USN, department, CGPA, backlogs and resume, must be true, complete and up to date.</li>
+    <li>The placement office may check your details against college records and ask for documents. If your details do not match, your application may be rejected or withdrawn.</li>
+    <li>Giving false information is serious. We may remove you from drives, suspend your account, and take action under the college's rules. A company may also withdraw an offer.</li>
+</ul>
+
+<h2 id="process">5. The placement process</h2>
+<ul>
+    <li>CPMS is a tool that helps you find drives, apply and follow your progress. <strong>We do not guarantee any interview, job offer or placement.</strong></li>
+    <li>Eligibility rules, selection decisions and offers are set by the companies and the placement office. Their decisions are final.</li>
+    <li>You can apply to a drive once. You may withdraw an application while it is still under review, and you may re-apply before the deadline if the drive is still open.</li>
+    <li>Attend interviews and tests you have applied for on time, and tell the placement office early if you cannot. Repeated no-shows may affect your future eligibility.</li>
+    <li>Any placement rules published by the college, for example rules about accepting more than one offer, also apply to you.</li>
+    <li>Information about drives and companies is confidential to the portal. Do not copy or share it outside the college.</li>
+</ul>
+
+<h2 id="conduct">6. Acceptable use</h2>
+<p>You agree not to:</p>
+<ul>
+    <li>break the law or the college's rules, or harass or mislead anyone;</li>
+    <li>upload files that contain viruses, offensive or unlawful material, or other people's private data;</li>
+    <li>try to see other users' data, bypass access controls, or overload or damage the portal;</li>
+    <li>use bots or scrapers, or copy the portal's data for your own purposes.</li>
+</ul>
+
+<h2 id="content">7. Your resume and content</h2>
+<p>You keep ownership of your resume and anything else you upload. You give {{ INSTITUTION_NAME }} permission to store it and to show it to placement officers and to companies for drives you apply to, for the purpose of placements. You promise that you have the right to upload it. You can replace your resume at any time on your profile page, or ask us to delete it.</p>
+
+<h2 id="privacy">8. Privacy</h2>
+<p>Our <a class="text-link" href="{% url 'privacy' %}">Privacy Policy</a> explains how we handle your personal data and your rights. Our <a class="text-link" href="{% url 'dpdp' %}">DPDP Act Notice</a> sets out your rights under India's Digital Personal Data Protection Act, 2023. By accepting these Terms you also confirm you have read the Privacy Policy.</p>
+
+<h2 id="suspend">9. Suspension and closing your account</h2>
+<p>We may suspend or close an account that breaks these Terms or the college's rules, or if you are no longer a student. You may ask us to close your account at any time by emailing <a class="text-link" href="mailto:{{ PRIVACY_CONTACT_EMAIL }}">{{ PRIVACY_CONTACT_EMAIL }}</a>. We keep some records for the periods stated in the Privacy Policy.</p>
+
+<h2 id="disclaimer">10. Disclaimers</h2>
+<p>We work to keep the portal running and accurate, but it is provided "as is". We do not promise that it will always be available or error-free, or that drive information from companies is complete or correct. Check important dates and details with the placement office.</p>
+
+<h2 id="liability">11. Liability</h2>
+<p>To the extent the law allows, {{ INSTITUTION_NAME }} is not liable for indirect or consequential loss, such as a missed opportunity, arising from use of the portal or from a company's decisions. Nothing in these Terms limits liability that cannot be limited by law, and nothing limits your rights under data protection law.</p>
+
+<h2 id="law">12. Governing law</h2>
+<p>These Terms are governed by the laws of India. Courts in {{ INSTITUTION_CITY }} have jurisdiction over disputes, unless the law gives you the right to go elsewhere. We encourage you to raise any concern with the placement office first.</p>
+
+<h2 id="changes">13. Changes</h2>
+<p>We may update these Terms. The version and date at the top show the latest update. If we make an important change, we will tell you in the portal. If you keep using the portal after the change, you accept the new Terms. If you do not agree, contact us to close your account.</p>
+{% endblock %}

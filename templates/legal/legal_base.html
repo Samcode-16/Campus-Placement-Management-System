@@ -1,0 +1,26 @@
+{% extends "public_base.html" %}
+{% block title %}{% block doc_title %}{% endblock %} | CPMS{% endblock %}
+
+{% block content %}
+<div class="pub-wrap legal">
+    <aside class="legal-toc" aria-label="On this page">
+        <p class="legal-toc-title">On this page</p>
+        <nav>{% block toc %}{% endblock %}</nav>
+        <p class="legal-toc-title">Other documents</p>
+        <nav>
+            <a href="{% url 'privacy' %}">Privacy Policy</a>
+            <a href="{% url 'terms' %}">Terms and Conditions</a>
+            <a href="{% url 'dpdp' %}">DPDP Act Notice</a>
+        </nav>
+    </aside>
+
+    <article class="legal-body">
+        <header>
+            <h1>{% block doc_heading %}{% endblock %}</h1>
+            <p class="legal-meta">Version {{ POLICY_VERSION }}. Last updated {{ POLICY_LAST_UPDATED }}.</p>
+        </header>
+        {% block legal_content %}{% endblock %}
+        <p class="legal-end">Questions about this document? Email <a class="text-link" href="mailto:{{ PRIVACY_CONTACT_EMAIL }}">{{ PRIVACY_CONTACT_EMAIL }}</a>.</p>
+    </article>
+</div>
+{% endblock %}

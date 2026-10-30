@@ -1,0 +1,66 @@
+{% extends "auth_base.html" %}
+{% block title %}Create student account | CPMS{% endblock %}
+{% block variant %}student{% endblock %}
+{% block panel_class %}wide{% endblock %}
+{% block aside_heading %}Join your campus placement portal.{% endblock %}
+{% block aside_text %}Registration takes about two minutes. Keep your USN and latest CGPA handy.{% endblock %}
+{% block aside_points %}
+<li>Drives check your CGPA, backlogs and department for you</li>
+<li>You only see drives you can apply to</li>
+<li>Add your resume once and reuse it</li>
+{% endblock %}
+
+{% block content %}
+<h1 class="auth-heading">Create your student account</h1>
+<p class="auth-lead">Your academic details decide which drives you are eligible for, so enter them as they appear in your records.</p>
+
+<form method="post" class="register-form" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="form-alert" role="alert">{{ form.non_field_errors.0 }}</div>{% endif %}
+
+    <fieldset>
+        <legend>About you</legend>
+        <div class="grid-2">
+            {% include "accounts/_field.html" with field=form.first_name %}
+            {% include "accounts/_field.html" with field=form.last_name %}
+        </div>
+        {% include "accounts/_field.html" with field=form.email %}
+    </fieldset>
+
+    <fieldset>
+        <legend>Academic details</legend>
+        <div class="grid-2">
+            {% include "accounts/_field.html" with field=form.usn %}
+            {% include "accounts/_field.html" with field=form.department %}
+            {% include "accounts/_field.html" with field=form.graduation_year %}
+            {% include "accounts/_field.html" with field=form.cgpa %}
+            {% include "accounts/_field.html" with field=form.active_backlogs %}
+            {% include "accounts/_field.html" with field=form.phone %}
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Sign-in details</legend>
+        {% include "accounts/_field.html" with field=form.username %}
+        <div class="grid-2">
+            {% include "accounts/_field.html" with field=form.password1 password=True %}
+            {% include "accounts/_field.html" with field=form.password2 password=True %}
+        </div>
+    </fieldset>
+
+    <fieldset class="consent-box">
+        <legend>Terms and privacy</legend>
+        <p class="consent-intro">Please read these before creating your account. The links open in a new tab, so you will not lose what you have typed.</p>
+        {% include "accounts/_checkbox.html" with field=form.accept_terms %}
+        {% include "accounts/_checkbox.html" with field=form.accept_privacy %}
+        {% include "accounts/_checkbox.html" with field=form.accept_sharing %}
+        <p class="consent-foot">You can withdraw consent, or ask to see, correct or erase your data, at any time by emailing <a class="text-link" href="mailto:{{ PRIVACY_CONTACT_EMAIL }}">{{ PRIVACY_CONTACT_EMAIL }}</a> ({{ GRIEVANCE_OFFICER }}). If you are unhappy with our reply you can complain to the Data Protection Board of India. We record the date and version of what you accept.</p>
+    </fieldset>
+
+    <button class="btn btn-teal btn-lg btn-block" type="submit">Create account</button>
+</form>
+
+<div class="auth-links">
+    <p>Already registered? <a class="text-link" href="{% url 'accounts:login' %}">Log in</a></p>
+</div>
+{% endblock %}

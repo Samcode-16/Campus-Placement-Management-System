@@ -1,0 +1,30 @@
+{% extends "auth_base.html" %}
+{% block title %}Placement officer login | CPMS{% endblock %}
+{% block variant %}staff{% endblock %}
+{% block aside_heading %}Run the placement cycle from one place.{% endblock %}
+{% block aside_text %}Review applications, shortlist candidates and keep every drive, company and training record up to date.{% endblock %}
+{% block aside_points %}
+<li>Shortlist, select or reject applications</li>
+<li>See live placement figures on your dashboard</li>
+<li>Manage drives, companies and training programs</li>
+{% endblock %}
+
+{% block content %}
+<h1 class="auth-heading">Placement officer login</h1>
+<p class="auth-lead">For authorised placement office staff only.</p>
+
+<form method="post" class="stack-form" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+    <div class="form-alert" role="alert">{{ form.non_field_errors.0 }}</div>
+    {% endif %}
+    {% include "accounts/_field.html" with field=form.username %}
+    {% include "accounts/_field.html" with field=form.password password=True %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="btn btn-navy btn-lg btn-block" type="submit">Log in</button>
+</form>
+
+<div class="auth-links">
+    <p>Are you a student? <a class="text-link" href="{% url 'accounts:login' %}">Use the student login</a></p>
+</div>
+{% endblock %}

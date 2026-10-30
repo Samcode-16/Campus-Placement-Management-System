@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CPMS | Campus Placement{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=3">
+</head>
+<body>
+    {% with page=request.resolver_match.url_name %}
+    <div class="app-shell">
+        <aside class="sidebar">
+            <a class="brand" href="/">
+                <span class="brand-mark">C</span>
+                <span>
+                    <strong>CPMS</strong>
+                    <small>Campus Placement</small>
+                </span>
+            </a>
+
+            {% if user.is_staff %}
+            <p class="nav-label">Placement office</p>
+            <nav class="navigation">
+                <a data-icon="grid" class="nav-link {% if page == 'staff_dashboard' %}active{% endif %}" href="{% url 'accounts:staff_dashboard' %}">Dashboard</a>
+                <a data-icon="briefcase" class="nav-link {% if page == 'placement_drives' or page == 'drive_detail' %}active{% endif %}" href="{% url 'recruitment:placement_drives' %}">Placement Drives</a>
+                <a data-icon="file" class="nav-link {% if page == 'manage_applications' %}active{% endif %}" href="{% url 'recruitment:manage_applications' %}">Applications</a>
+                <a data-icon="book" class="nav-link {% if page == 'training_programs' %}active{% endif %}" href="{% url 'training:training_programs' %}">Training Programs</a>
+                <a data-icon="shield" class="nav-link" href="/admin/">Administration</a>
+            </nav>
+            {% else %}
+            <p class="nav-label">Student</p>
+            <nav class="navigation">
+                <a data-icon="grid" class="nav-link {% if page == 'student_dashboard' %}active{% endif %}" href="{% url 'accounts:student_dashboard' %}">My Dashboard</a>
+                <a data-icon="briefcase" class="nav-link {% if page == 'placement_drives' or page == 'drive_detail' or page == 'apply' %}active{% endif %}" href="{% url 'recruitment:placement_drives' %}">Placement Drives</a>
+                <a data-icon="file" class="nav-link {% if page == 'my_applications' %}active{% endif %}" href="{% url 'recruitment:my_applications' %}">My Applications</a>
+                <a data-icon="book" class="nav-link {% if page == 'training_programs' %}active{% endif %}" href="{% url 'training:training_programs' %}">Training Programs</a>
+                <a data-icon="user" class="nav-link {% if page == 'student_profile' %}active{% endif %}" href="{% url 'accounts:student_profile' %}">My Profile</a>
+            </nav>
+            {% endif %}
+
+            <div class="sidebar-footer">
+                <span class="status-dot"></span>
+                <span>Placement Management System</span>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <h1>{% block page_heading %}Dashboard{% endblock %}</h1>
+                <div class="user-chip">
+                    <span class="avatar" aria-hidden="true">{{ user.username|slice:":1"|upper }}</span>
+                    <span>
+                        <strong>{{ user.get_full_name|default:user.username }}</strong>
+                        <small>{% if user.is_staff %}Placement Officer{% else %}Student{% endif %}</small>
+                    </span>
+                    <form method="post" action="{% url 'accounts:logout' %}" class="logout-form">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-button">Log out</button>
+                    </form>
+                </div>
+            </header>
+
+            <section class="page-content">
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li class="message {{ message.tags }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% block content %}{% endblock %}
+            </section>
+
+            <footer class="page-footer">
+                <p>&copy; {% now "Y" %} {{ INSTITUTION_NAME }}. CPMS Campus Placement Portal.</p>
+                <nav aria-label="Footer">
+                    <a href="{% url 'privacy' %}">Privacy Policy</a>
+                    <a href="{% url 'terms' %}">Terms</a>
+                    <a href="{% url 'dpdp' %}">DPDP notice</a>
+                    <a class="pf-help" href="mailto:{{ PRIVACY_CONTACT_EMAIL }}">Contact placement office</a>
+                </nav>
+            </footer>
+        </main>
+    </div>
+    {% endwith %}
+</body>
+</html>
