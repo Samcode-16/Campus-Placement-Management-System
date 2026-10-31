@@ -140,11 +140,11 @@ Open <http://127.0.0.1:8000/> and sign in with the [demo credentials](#demo-cred
 
 | Admin Dashboard | Student Dashboard |
 | :---: | :---: |
-| ![Admin Dashboard](docs/screenshots/admin-dashboard.png) | ![Student Dashboard](docs/screenshots/student-dashboard.png) |
-| **Drive Details & Apply** | **My Applications** |
-| ![Drive Details](docs/screenshots/drive-details.png) | ![My Applications](docs/screenshots/my-applications.png) |
+| ![Admin Dashboard](static/screenshots/admin_dash.png) | ![Student Dashboard](static/screenshots/student_dash.png) |
+| **Placement Drives** | **My Applications** |
+| ![Placement Drives](static/screenshots/placement.png) | ![My Applications](static/screenshots/my_application.png) |
 | **Application Pipeline (Admin)** | **Training Programs** |
-| ![Application Pipeline](docs/screenshots/application-pipeline.png) | ![Training Programs](docs/screenshots/training-programs.png) |
+| ![Application Pipeline](static/screenshots/application_admin.png) | ![Training Programs](static/screenshots/training.png) |
 
 <details>
 <summary><strong>All application views</strong></summary>
@@ -423,7 +423,8 @@ CPMS/
 │   └── views.py
 ├── static/
 │   ├── css/                   # public.css, style.css
-│   └── images/                # Logos, emblems, favicons
+│   ├── images/                # Logos, emblems, favicons
+│   └── screenshots/           # Application screenshots for UI showcase
 ├── templates/
 │   ├── admin_portal/          # applications, companies, drives, students, training
 │   ├── accounts/              # Student login, register, profile, dashboard
