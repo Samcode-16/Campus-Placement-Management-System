@@ -29,11 +29,17 @@
             <p class="nav-label">Administrator</p>
             <nav class="navigation">
                 <a data-icon="grid" class="nav-link {% if page == 'staff_dashboard' or page == 'admin_dashboard' %}active{% endif %}" href="{% url 'admin_dashboard' %}">Dashboard</a>
-                <a data-icon="user" class="nav-link {% if 'admin_student' in page %}active{% endif %}" href="{% url 'admin_student_list' %}">Students</a>
-                <a data-icon="briefcase" class="nav-link {% if 'admin_company' in page %}active{% endif %}" href="{% url 'admin_company_list' %}">Companies</a>
+                <a data-icon="user" class="nav-link {% if 'admin_student' in page %}active{% endif %}" href="{% url 'admin_student_list' %}">Manage Students</a>
+                <a data-icon="briefcase" class="nav-link {% if 'admin_company' in page %}active{% endif %}" href="{% url 'admin_company_list' %}">Manage Companies</a>
                 <a data-icon="briefcase" class="nav-link {% if 'admin_drive' in page or page == 'placement_drives' or page == 'drive_detail' %}active{% endif %}" href="{% url 'admin_drive_list' %}">Placement Drives</a>
                 <a data-icon="file" class="nav-link {% if 'admin_application' in page or page == 'manage_applications' %}active{% endif %}" href="{% url 'admin_application_list' %}">Applications</a>
-                <a data-icon="book" class="nav-link {% if page == 'training_programs' %}active{% endif %}" href="{% url 'training:training_programs' %}">Training Programs</a>
+                <a data-icon="book" class="nav-link {% if 'admin_training' in page %}active{% endif %}" href="{% url 'admin_training_list' %}">Training Programs</a>
+                <form method="post" action="{% url 'accounts:logout' %}" style="display: block; width: 100%; margin-top: 4px;">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-link" data-icon="shield" style="width: 100%; text-align: left; background: none; border: none; cursor: pointer; color: inherit; font: inherit; padding: 10px 14px;">
+                        Logout
+                    </button>
+                </form>
             </nav>
             {% else %}
             <p class="nav-label">Student</p>

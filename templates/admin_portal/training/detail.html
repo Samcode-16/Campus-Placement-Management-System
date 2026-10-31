@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}{{ program.title }} | Training Program Details{% endblock %}
+{% block page_heading %}Training Program Details{% endblock %}
+
+{% block content %}
+<div class="welcome-row">
+    <div>
+        <a class="text-link" href="{% url 'admin_training_list' %}" style="display: inline-block; margin-bottom: 8px;">
+            &larr; Back to all training programs
+        </a>
+        <h2 style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            {{ program.title }}
+            {% if program.status == 'UPCOMING' %}
+                <span class="status-badge" style="background: #e0f2fe; color: #0369a1; font-size: 13px;">Upcoming</span>
+            {% elif program.status == 'ONGOING' %}
+                <span class="status-badge status-active" style="background: var(--ok-soft); color: var(--ok); font-size: 13px;">Ongoing</span>
+            {% elif program.status == 'COMPLETED' %}
+                <span class="status-badge" style="background: #f1f5f9; color: #475569; font-size: 13px;">Completed</span>
+            {% else %}
+                <span class="status-badge" style="background: #fee2e2; color: #991b1b; font-size: 13px;">Cancelled</span>
+            {% endif %}
+            <span class="status-badge" style="background: #f1f5f9; color: var(--navy); font-size: 13px;">{{ program.get_mode_display }}</span>
+        </h2>
+        <p>
+            Trainer: <strong>{{ program.trainer }}</strong>
+            &bull; Schedule: {{ program.start_date|date:"F d, Y" }} &ndash; {{ program.end_date|date:"F d, Y" }}
+        </p>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <!-- Quick Status Change Form -->
+        <form method="post" action="{% url 'admin_training_status' program.pk %}" style="display: inline-flex; align-items: center; gap: 6px;">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <select name="status" onchange="this.form.submit()" style="padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; background: #fff; color: var(--navy); cursor: pointer;" aria-label="Change Program Status">
+                {% for val, label in status_choices %}
+                    <option value="{{ val }}" {% if program.status == val %}selected{% endif %}>Status: {{ label }}</option>
+                {% endfor %}
+            </select>
+        </form>
+
+        <a class="primary-button" href="{% url 'admin_training_edit' program.pk %}">Edit Program</a>
+
+        {% if program.enrollments_count == 0 %}
+            <form method="post" action="{% url 'admin_training_delete' program.pk %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit"
+                        class="primary-button"
+                        style="background: #b42318; border-color: #b42318;"
+                        onclick="return confirm('Permanently delete training program \'{{ program.title|escapejs }}\'? This action cannot be undone.');">
+                    Delete Program
+                </button>
+            </form>
+        {% else %}
+            <button type="button"
+                    class="primary-button"
+                    style="background: #94a3b8; border-color: #94a3b8; cursor: not-allowed;"
+                    title="Cannot delete: {{ program.enrollments_count }} student enrollment(s) exist for this program."
+                    disabled>
+                Protected ({{ program.enrollments_count }} Enrolled)
+            </button>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Program Metrics Cards -->
+<div class="metrics-grid" style="margin-bottom: 24px;">
+    <div class="metric-card">
+        <span class="metric-label">Enrolled Students</span>
+        <span class="metric-value">{{ status_counts.total }} <small style="font-size: 14px; font-weight: normal;">/ {{ program.capacity }}</small></span>
+        <span class="metric-sub">{{ status_counts.in_progress }} currently in progress</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-label">Average Attendance</span>
+        <span class="metric-value" style="color: var(--teal);">{{ avg_attendance }}%</span>
+        <span class="metric-sub">Session participation</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-label">Average Score</span>
+        <span class="metric-value" style="color: var(--navy);">{{ avg_score }}%</span>
+        <span class="metric-sub">Assessment evaluations</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-label">Completed Certifications</span>
+        <span class="metric-value" style="color: var(--ok);">{{ status_counts.completed }}</span>
+        <span class="metric-sub">{{ status_counts.dropped }} dropped / withdrawn</span>
+    </div>
+</div>
+
+<!-- Two-Column Logistics & Curriculum -->
+<div class="two-col" style="margin-bottom: 24px;">
+    <!-- Logistics & Organization -->
+    <article class="panel">
+        <div class="panel-heading">
+            <h2>Program Logistics & Schedule</h2>
+            <p>Operational schedule and batch configurations.</p>
+        </div>
+        <div class="record-grid">
+            <div>
+                <dt>Trainer / Lead Agency</dt>
+                <dd><strong>{{ program.trainer }}</strong></dd>
+            </div>
+            <div>
+                <dt>Delivery Format</dt>
+                <dd>{{ program.get_mode_display }}</dd>
+            </div>
+            <div>
+                <dt>Start Date</dt>
+                <dd>{{ program.start_date|date:"F d, Y" }}</dd>
+            </div>
+            <div>
+                <dt>End Date</dt>
+                <dd>{{ program.end_date|date:"F d, Y" }}</dd>
+            </div>
+            <div>
+                <dt>Batch Capacity</dt>
+                <dd>{{ program.capacity }} maximum seats</dd>
+            </div>
+            <div>
+                <dt>Available Seats</dt>
+                <dd>
+                    {% if program.capacity > status_counts.total %}
+                        <span style="color: var(--ok); font-weight: 600;">{{ program.capacity|add:"-"|add:status_counts.total }} seat{{ program.capacity|add:"-"|add:status_counts.total|pluralize }} available</span>
+                    {% else %}
+                        <span style="color: var(--danger); font-weight: 600;">Batch Full</span>
+                    {% endif %}
+                </dd>
+            </div>
+        </div>
+    </article>
+
+    <!-- Syllabus & Curriculum -->
+    <article class="panel">
+        <div class="panel-heading">
+            <h2>Curriculum & Syllabus Description</h2>
+            <p>Objectives, course modules, and skill competencies.</p>
+        </div>
+        <div style="padding: 16px 22px; font-size: 14px; line-height: 1.6; color: var(--text);">
+            <p style="white-space: pre-line; margin: 0;">{{ program.description }}</p>
+        </div>
+    </article>
+</div>
+
+<!-- Enrolled Students Roster Panel -->
+<section class="panel">
+    <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2>Enrolled Students Roster ({{ enrollments|length }})</h2>
+            <p>Students currently participating in this skill-building program.</p>
+        </div>
+    </div>
+
+    {% if enrollments %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>USN</th>
+                        <th>Department</th>
+                        <th>Enrolled On</th>
+                        <th>Attendance</th>
+                        <th>Assessment Score</th>
+                        <th>Completion Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for enrollment in enrollments %}
+                    <tr>
+                        <td class="student-meta-cell">
+                            <strong>{{ enrollment.student.user.get_full_name|default:enrollment.student.user.username }}</strong>
+                            <small><a class="text-link" href="mailto:{{ enrollment.student.user.email }}">{{ enrollment.student.user.email }}</a></small>
+                        </td>
+                        <td>
+                            <a class="text-link" href="{% url 'admin_student_detail' enrollment.student.pk %}" style="font-weight: 700;">
+                                {{ enrollment.student.usn }}
+                            </a>
+                        </td>
+                        <td>{{ enrollment.student.department.code }}</td>
+                        <td style="font-size: 13px;">{{ enrollment.enrolled_at|date:"M d, Y" }}</td>
+                        <td>
+                            <strong>{{ enrollment.attendance_percentage }}%</strong>
+                        </td>
+                        <td>
+                            {% if enrollment.assessment_score is not None %}
+                                <strong>{{ enrollment.assessment_score }}%</strong>
+                            {% else %}
+                                <span class="muted">&mdash;</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if enrollment.completion_status == 'COMPLETED' %}
+                                <span class="status-badge status-active" style="background: var(--ok-soft); color: var(--ok);">Completed</span>
+                            {% elif enrollment.completion_status == 'IN_PROGRESS' %}
+                                <span class="status-badge" style="background: #e0f2fe; color: #0369a1;">In Progress</span>
+                            {% elif enrollment.completion_status == 'DROPPED' %}
+                                <span class="status-badge" style="background: #fee2e2; color: #991b1b;">Dropped</span>
+                            {% else %}
+                                <span class="status-badge" style="background: #f1f5f9; color: #475569;">Enrolled</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>No student enrollments yet</h3>
+            <p>Students will appear in this roster once enrolled in this training program.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

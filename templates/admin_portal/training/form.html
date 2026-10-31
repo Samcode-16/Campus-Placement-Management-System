@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}{{ action_title }} | CPMS{% endblock %}
+{% block page_heading %}{{ action_title }}{% endblock %}
+
+{% block content %}
+<div class="welcome-row">
+    <div>
+        {% if program %}
+            <a class="text-link" href="{% url 'admin_training_detail' program.pk %}" style="display: inline-block; margin-bottom: 8px;">
+                &larr; Back to {{ program.title }} Details
+            </a>
+        {% else %}
+            <a class="text-link" href="{% url 'admin_training_list' %}" style="display: inline-block; margin-bottom: 8px;">
+                &larr; Back to Training Catalogue
+            </a>
+        {% endif %}
+        <h2>{{ action_title }}</h2>
+        <p>Define curriculum objectives, assign industry trainers, specify delivery modes, and configure batch sizes.</p>
+    </div>
+</div>
+
+<div style="max-width: 860px;">
+    <section class="panel">
+        <div class="panel-heading">
+            <h2>Program Specifications & Logistics</h2>
+            <p>Ensure schedule dates, instructor coordinates, and capacity limits are accurately specified.</p>
+        </div>
+
+        <form method="post" class="stack-form padded" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="form-errors">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <h3 style="font-size: 15px; color: var(--navy); margin: 0; padding-bottom: 6px; border-bottom: 1px solid var(--border);">
+                Program Overview & Instructor
+            </h3>
+
+            <div class="field">
+                <label for="{{ form.title.id_for_label }}">Training Program Title *</label>
+                {{ form.title }}
+                {% for error in form.title.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+                <div class="field">
+                    <label for="{{ form.trainer.id_for_label }}">Trainer / Resource Person / Agency *</label>
+                    {{ form.trainer }}
+                    {% for error in form.trainer.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.capacity.id_for_label }}">Maximum Batch Capacity *</label>
+                    {{ form.capacity }}
+                    {% for error in form.capacity.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </div>
+            </div>
+
+            <h3 style="font-size: 15px; color: var(--navy); margin: 16px 0 0 0; padding-bottom: 6px; border-bottom: 1px solid var(--border);">
+                Format & Program Status
+            </h3>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+                <div class="field">
+                    <label for="{{ form.mode.id_for_label }}">Delivery Mode *</label>
+                    {{ form.mode }}
+                    {% for error in form.mode.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.status.id_for_label }}">Program Status *</label>
+                    {{ form.status }}
+                    {% for error in form.status.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </div>
+            </div>
+
+            <h3 style="font-size: 15px; color: var(--navy); margin: 16px 0 0 0; padding-bottom: 6px; border-bottom: 1px solid var(--border);">
+                Schedule Milestones
+            </h3>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+                <div class="field">
+                    <label for="{{ form.start_date.id_for_label }}">Start Date *</label>
+                    {{ form.start_date }}
+                    {% for error in form.start_date.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.end_date.id_for_label }}">End Date *</label>
+                    {{ form.end_date }}
+                    {% for error in form.end_date.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </div>
+            </div>
+
+            <h3 style="font-size: 15px; color: var(--navy); margin: 16px 0 0 0; padding-bottom: 6px; border-bottom: 1px solid var(--border);">
+                Curriculum & Syllabus Description
+            </h3>
+
+            <div class="field">
+                <label for="{{ form.description.id_for_label }}">Program Curriculum & Objectives *</label>
+                {{ form.description }}
+                {% for error in form.description.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+            </div>
+
+            <div class="button-row" style="margin-top: 14px;">
+                <button type="submit" class="primary-button">
+                    {% if program %}Save Program Changes{% else %}Create Training Program{% endif %}
+                </button>
+                {% if program %}
+                    <a href="{% url 'admin_training_detail' program.pk %}" style="display: inline-block; padding: 10px 18px; border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--navy); font-weight: 500; font-size: 13.5px; text-decoration: none; background: #fff;">
+                        Cancel
+                    </a>
+                {% else %}
+                    <a href="{% url 'admin_training_list' %}" style="display: inline-block; padding: 10px 18px; border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--navy); font-weight: 500; font-size: 13.5px; text-decoration: none; background: #fff;">
+                        Cancel
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}

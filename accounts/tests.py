@@ -385,7 +385,7 @@ class Phase2AdminDashboardTests(TestCase):
         r = self.client.get("/admin-dashboard/")
         self.assertContains(r, reverse("admin_application_list"))
         self.assertContains(r, reverse("admin_drive_list"))
-        self.assertContains(r, reverse("training:training_programs"))
+        self.assertContains(r, reverse("admin_training_list"))
 
     def test_admin_dashboard_charts_and_recent_activities_rendered(self):
         self.client.force_login(self.admin)

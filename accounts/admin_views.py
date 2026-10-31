@@ -2,7 +2,7 @@ import os
 
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Count, Q
+from django.db.models import Avg, Count, Q
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -13,6 +13,8 @@ from accounts.forms import AdminStudentEditForm
 from accounts.models import Department, StudentProfile
 from recruitment.forms import CompanyForm, PlacementDriveForm
 from recruitment.models import Application, Company, PlacementDrive
+from training.forms import TrainingProgramForm
+from training.models import TrainingEnrollment, TrainingProgram
 
 
 # =========================================================================
@@ -644,4 +646,168 @@ def admin_application_resume_view(request, pk):
         as_attachment=False,
         filename=filename,
     )
+
+
+# =========================================================================
+# E. TRAINING PROGRAM MANAGEMENT
+# =========================================================================
+
+@staff_required
+def admin_training_list_view(request):
+    """Lists all training programs with search, mode/status filters, and pagination."""
+    programs = (
+        TrainingProgram.objects.annotate(enrollments_count=Count("enrollments"))
+        .order_by("-start_date")
+    )
+
+    query = request.GET.get("q", "").strip()
+    if query:
+        programs = programs.filter(
+            Q(title__icontains=query)
+            | Q(trainer__icontains=query)
+            | Q(description__icontains=query)
+        )
+
+    mode = request.GET.get("mode", "").strip()
+    if mode in TrainingProgram.Mode.values:
+        programs = programs.filter(mode=mode)
+
+    status_filter = request.GET.get("status", "").strip()
+    if status_filter in TrainingProgram.Status.values:
+        programs = programs.filter(status=status_filter)
+
+    paginator = Paginator(programs, 10)
+    page_number = request.GET.get("page", 1)
+    page_obj = paginator.get_page(page_number)
+
+    params = request.GET.copy()
+    params.pop("page", None)
+    query_string = params.urlencode()
+
+    context = {
+        "page_obj": page_obj,
+        "mode_choices": TrainingProgram.Mode.choices,
+        "status_choices": TrainingProgram.Status.choices,
+        "selected_mode": mode,
+        "selected_status": status_filter,
+        "search_query": query,
+        "query_string": query_string,
+        "total_count": paginator.count,
+    }
+    return render(request, "admin_portal/training/list.html", context)
+
+
+@staff_required
+def admin_training_create_view(request):
+    """Allows administrators to create a new training program."""
+    form = TrainingProgramForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        program = form.save()
+        messages.success(
+            request, f"Training program '{program.title}' created successfully."
+        )
+        return redirect("admin_training_detail", pk=program.pk)
+
+    context = {"form": form, "action_title": "Add Training Program"}
+    return render(request, "admin_portal/training/form.html", context)
+
+
+@staff_required
+def admin_training_detail_view(request, pk):
+    """Displays comprehensive training program specifications and enrolled student roster."""
+    program = get_object_or_404(
+        TrainingProgram.objects.annotate(enrollments_count=Count("enrollments")),
+        pk=pk,
+    )
+    enrollments = (
+        program.enrollments.select_related("student__user", "student__department")
+        .order_by("-enrolled_at")
+    )
+
+    stats = enrollments.aggregate(
+        avg_attendance=Avg("attendance_percentage"),
+        avg_score=Avg("assessment_score"),
+    )
+
+    status_counts = {
+        "total": enrollments.count(),
+        "enrolled": enrollments.filter(completion_status=TrainingEnrollment.CompletionStatus.ENROLLED).count(),
+        "in_progress": enrollments.filter(completion_status=TrainingEnrollment.CompletionStatus.IN_PROGRESS).count(),
+        "completed": enrollments.filter(completion_status=TrainingEnrollment.CompletionStatus.COMPLETED).count(),
+        "dropped": enrollments.filter(completion_status=TrainingEnrollment.CompletionStatus.DROPPED).count(),
+    }
+
+    context = {
+        "program": program,
+        "enrollments": enrollments,
+        "status_counts": status_counts,
+        "avg_attendance": round(stats["avg_attendance"] or 0, 1),
+        "avg_score": round(stats["avg_score"] or 0, 1),
+        "status_choices": TrainingProgram.Status.choices,
+    }
+    return render(request, "admin_portal/training/detail.html", context)
+
+
+@staff_required
+def admin_training_edit_view(request, pk):
+    """Allows administrators to edit an existing training program."""
+    program = get_object_or_404(TrainingProgram, pk=pk)
+    form = TrainingProgramForm(request.POST or None, instance=program)
+    if request.method == "POST" and form.is_valid():
+        program = form.save()
+        messages.success(
+            request, f"Training program '{program.title}' updated successfully."
+        )
+        return redirect("admin_training_detail", pk=program.pk)
+
+    context = {
+        "program": program,
+        "form": form,
+        "action_title": f"Edit Training Program: {program.title}",
+    }
+    return render(request, "admin_portal/training/form.html", context)
+
+
+@staff_required
+@require_POST
+def admin_training_delete_view(request, pk):
+    """Safely deletes a training program only if no student enrollments exist."""
+    program = get_object_or_404(TrainingProgram, pk=pk)
+    enrollments_count = program.enrollments.count()
+    if enrollments_count > 0:
+        messages.error(
+            request,
+            f"Cannot delete training program '{program.title}' because it has {enrollments_count} "
+            f"student enrollment(s). Remove or reassign enrollments first.",
+        )
+        return redirect("admin_training_detail", pk=program.pk)
+
+    program_title = program.title
+    program.delete()
+    messages.success(
+        request, f"Training program '{program_title}' has been deleted successfully."
+    )
+    return redirect("admin_training_list")
+
+
+@staff_required
+@require_POST
+def admin_training_status_view(request, pk):
+    """Quick status update action for training programs."""
+    program = get_object_or_404(TrainingProgram, pk=pk)
+    new_status = request.POST.get("status")
+    if new_status in TrainingProgram.Status.values:
+        program.status = new_status
+        program.save(update_fields=["status"])
+        messages.success(
+            request, f"Training program status updated to '{program.get_status_display()}'."
+        )
+    else:
+        messages.error(request, "Invalid status choice selected.")
+
+    next_url = request.POST.get("next")
+    if next_url and url_has_allowed_host_and_scheme(next_url, {request.get_host()}):
+        return redirect(next_url)
+    return redirect("admin_training_detail", pk=program.pk)
+
 

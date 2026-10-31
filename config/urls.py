@@ -41,6 +41,14 @@ urlpatterns = [
     path("admin-dashboard/applications/<int:pk>/status/", admin_views.admin_application_status_view, name="admin_application_status"),
     path("admin-dashboard/applications/<int:pk>/resume/", admin_views.admin_application_resume_view, name="admin_application_resume"),
 
+    # Training Program Management (Phase 5)
+    path("admin-dashboard/training/", admin_views.admin_training_list_view, name="admin_training_list"),
+    path("admin-dashboard/training/create/", admin_views.admin_training_create_view, name="admin_training_create"),
+    path("admin-dashboard/training/<int:pk>/", admin_views.admin_training_detail_view, name="admin_training_detail"),
+    path("admin-dashboard/training/<int:pk>/edit/", admin_views.admin_training_edit_view, name="admin_training_edit"),
+    path("admin-dashboard/training/<int:pk>/delete/", admin_views.admin_training_delete_view, name="admin_training_delete"),
+    path("admin-dashboard/training/<int:pk>/status/", admin_views.admin_training_status_view, name="admin_training_status"),
+
     path("accounts/", include("accounts.urls")),
     path("recruitment/", include("recruitment.urls")),
     path("training/", include("training.urls")),

@@ -12,7 +12,7 @@
         <p>Manage skill-building programs and student development.</p>
     </div>
     {% if user.is_staff %}
-    <a class="primary-button" href="/admin/training/trainingprogram/add/">
+    <a class="primary-button" href="{% url 'admin_training_create' %}">
         Add Training Program
     </a>
     {% endif %}
@@ -92,7 +92,7 @@
     <div class="empty-state">
         <h3>No training programs found</h3>
         <p>Add a program or change the filters to see available training.</p>
-        <a class="text-link" href="/admin/training/trainingprogram/add/">
+        <a class="text-link" href="{% url 'admin_training_create' %}">
             Create a training program
         </a>
     </div>

@@ -14,7 +14,7 @@
     <div>
         <a class="primary-button" href="{% url 'admin_application_list' %}">Manage Applications</a>
         <a class="primary-button" href="{% url 'admin_drive_list' %}">Placement Drives</a>
-        <a class="primary-button" href="{% url 'training:training_programs' %}">Training Programs</a>
+        <a class="primary-button" href="{% url 'admin_training_list' %}">Training Programs</a>
     </div>
 </div>
 
@@ -105,14 +105,14 @@
     </a>
 
     <!-- 8. Total Training Programs -->
-    <a class="stat-card link-card" href="{% url 'training:training_programs' %}" title="View training programs">
+    <a class="stat-card link-card" href="{% url 'admin_training_list' %}" title="Manage training programs">
         <div class="stat-card-head">
             <span class="stat-label">Training Programs</span>
             <span class="stat-icon-badge">&#128218;</span>
         </div>
         <strong class="stat-number">{{ total_training_programs }}</strong>
         <span class="stat-note">Skill development tracks</span>
-        <span class="stat-card-link-text">Explore programs &rarr;</span>
+        <span class="stat-card-link-text">Manage programs &rarr;</span>
     </a>
 </div>
 
