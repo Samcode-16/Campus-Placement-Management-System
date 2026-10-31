@@ -622,13 +622,22 @@ button.primary-button { border: 0; cursor: pointer; font: inherit; font-size: 13
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     border-radius: 8px;
     background: var(--teal-soft);
     color: var(--teal);
-    font-size: 14px;
-    font-weight: 700;
+    line-height: 1;
+    flex-shrink: 0;
+}
+.stat-icon-badge svg,
+.stat-icon-badge i,
+.stat-icon-badge [data-lucide] {
+    width: 18px;
+    height: 18px;
+    stroke-width: 2.2px;
+    stroke: currentColor;
+    display: block;
 }
 .stat-card-link-text {
     margin-top: auto;
