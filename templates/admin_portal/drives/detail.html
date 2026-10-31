@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}{{ drive.title }} - {{ drive.company.name }} | Placement Drive{% endblock %}
+{% block page_heading %}Placement Drive Details{% endblock %}
+
+{% block content %}
+<div class="welcome-row">
+    <div>
+        <a class="text-link" href="{% url 'admin_drive_list' %}" style="display: inline-block; margin-bottom: 8px;">
+            &larr; Back to all placement drives
+        </a>
+        <h2 style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            {{ drive.title }}
+            {% if drive.status == 'OPEN' %}
+                <span class="status-badge status-active" style="background: var(--ok-soft); color: var(--ok); font-size: 13px;">Open</span>
+            {% elif drive.status == 'CLOSED' %}
+                <span class="status-badge" style="background: #fee2e2; color: #991b1b; font-size: 13px;">Closed</span>
+            {% elif drive.status == 'COMPLETED' %}
+                <span class="status-badge" style="background: #f1f5f9; color: #475569; font-size: 13px;">Completed</span>
+            {% else %}
+                <span class="status-badge" style="background: #fef3c7; color: #92400e; font-size: 13px;">Draft</span>
+            {% endif %}
+            <span class="status-badge" style="background: #e0f2fe; color: #0369a1; font-size: 13px;">{{ drive.get_category_display }}</span>
+        </h2>
+        <p>
+            Partner Company: <a class="text-link" href="{% url 'admin_company_detail' drive.company.pk %}" style="font-weight: 600;">{{ drive.company.name }}</a>
+            &bull; Drive Date: {{ drive.drive_date|date:"F d, Y - h:i A" }}
+        </p>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <!-- Quick Status Change Form -->
+        <form method="post" action="{% url 'admin_drive_status' drive.pk %}" style="display: inline-flex; align-items: center; gap: 6px;">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <select name="status" onchange="this.form.submit()" style="padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; background: #fff; color: var(--navy); cursor: pointer;" aria-label="Change Drive Status">
+                {% for val, label in status_choices %}
+                    <option value="{{ val }}" {% if drive.status == val %}selected{% endif %}>Status: {{ label }}</option>
+                {% endfor %}
+            </select>
+        </form>
+
+        <a class="primary-button" href="{% url 'admin_drive_edit' drive.pk %}">Edit Drive</a>
+
+        {% if drive.applications.count == 0 %}
+            <form method="post" action="{% url 'admin_drive_delete' drive.pk %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit"
+                        class="primary-button"
+                        style="background: #b42318; border-color: #b42318;"
+                        onclick="return confirm('Permanently delete placement drive \'{{ drive.title|escapejs }}\'? This cannot be undone.');">
+                    Delete Drive
+                </button>
+            </form>
+        {% else %}
+            <button type="button"
+                    class="primary-button"
+                    style="background: #94a3b8; border-color: #94a3b8; cursor: not-allowed;"
+                    title="Cannot delete because {{ drive.applications.count }} student application(s) exist for this drive."
+                    disabled>
+                Protected ({{ drive.applications.count }} Applicants)
+            </button>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Drive Metrics Tiles -->
+<div class="metrics-grid" style="margin-bottom: 24px;">
+    <div class="metric-card">
+        <span class="metric-label">Annual Package</span>
+        <span class="metric-value">₹{{ drive.package_lpa }} <small style="font-size: 14px; font-weight: normal;">LPA</small></span>
+        <span class="metric-sub">{{ drive.vacancies }} open vacanc{{ drive.vacancies|pluralize:"y,ies" }}</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-label">Total Applicants</span>
+        <span class="metric-value">{{ app_stats.total }}</span>
+        <span class="metric-sub">{{ app_stats.applied }} awaiting review</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-label">Shortlisted Candidates</span>
+        <span class="metric-value" style="color: var(--teal);">{{ app_stats.shortlisted }}</span>
+        <span class="metric-sub">Interview stage</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-label">Selected Offers</span>
+        <span class="metric-value" style="color: var(--ok);">{{ app_stats.selected }}</span>
+        <span class="metric-sub">{{ app_stats.rejected }} rejected &bull; {{ app_stats.withdrawn }} withdrawn</span>
+    </div>
+</div>
+
+<!-- Two-Column Specifications -->
+<div class="two-col" style="margin-bottom: 24px;">
+    <!-- Eligibility & Milestones -->
+    <article class="panel">
+        <div class="panel-heading">
+            <h2>Eligibility & Drive Schedule</h2>
+            <p>Strict eligibility cutoffs evaluated during application submission.</p>
+        </div>
+        <div class="record-grid">
+            <div>
+                <dt>Minimum CGPA Cutoff</dt>
+                <dd><strong style="font-size: 17px; color: var(--navy);">{{ drive.minimum_cgpa }} / 10.00</strong></dd>
+            </div>
+            <div>
+                <dt>Maximum Active Backlogs</dt>
+                <dd><strong>{{ drive.maximum_backlogs }}</strong> backlog(s) allowed</dd>
+            </div>
+            <div>
+                <dt>Application Deadline</dt>
+                <dd>
+                    <strong>{{ drive.application_deadline|date:"M d, Y" }}</strong>
+                    <div style="font-size: 12.5px; color: var(--muted);">{{ drive.application_deadline|date:"h:i A" }}</div>
+                </dd>
+            </div>
+            <div>
+                <dt>Drive Date & Time</dt>
+                <dd>
+                    <strong>{{ drive.drive_date|date:"M d, Y" }}</strong>
+                    <div style="font-size: 12.5px; color: var(--muted);">{{ drive.drive_date|date:"h:i A" }}</div>
+                </dd>
+            </div>
+            <div>
+                <dt>Eligible Departments</dt>
+                <dd>
+                    {% if drive.eligible_departments.all %}
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px;">
+                            {% for dept in drive.eligible_departments.all %}
+                                <span class="status-badge" style="background: #f1f5f9; color: var(--navy); font-size: 11.5px;">
+                                    {{ dept.code }} - {{ dept.name }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <span style="color: var(--ok); font-weight: 600;">Open to All Departments</span>
+                    {% endif %}
+                </dd>
+            </div>
+            <div>
+                <dt>Accepting Applications?</dt>
+                <dd>
+                    {% if drive.is_accepting_applications %}
+                        <span class="status-badge status-active" style="background: var(--ok-soft); color: var(--ok);">Yes (Active & Open)</span>
+                    {% else %}
+                        <span class="status-badge" style="background: #fee2e2; color: #991b1b;">No (Closed / Deadline passed)</span>
+                    {% endif %}
+                </dd>
+            </div>
+        </div>
+    </article>
+
+    <!-- Job Description -->
+    <article class="panel">
+        <div class="panel-heading">
+            <h2>Role Description & Requirements</h2>
+            <p>Detailed specifications provided to eligible candidates.</p>
+        </div>
+        <div style="padding: 16px 22px; font-size: 14px; line-height: 1.6; color: var(--text);">
+            <p style="white-space: pre-line; margin: 0;">{{ drive.job_description }}</p>
+        </div>
+    </article>
+</div>
+
+<!-- Student Applications Table Panel -->
+<section class="panel">
+    <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2>Student Applications ({{ applications|length }})</h2>
+            <p>Candidate submissions for this placement drive. Change statuses to progress candidates through the pipeline.</p>
+        </div>
+    </div>
+
+    {% if applications %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>USN</th>
+                        <th>Department</th>
+                        <th>CGPA / Backlogs</th>
+                        <th>Applied On</th>
+                        <th>Resume</th>
+                        <th>Application Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                    <tr>
+                        <td class="student-meta-cell">
+                            <strong>{{ app.student.user.get_full_name|default:app.student.user.username }}</strong>
+                            <small><a class="text-link" href="mailto:{{ app.student.user.email }}">{{ app.student.user.email }}</a></small>
+                        </td>
+                        <td>
+                            <a class="text-link" href="{% url 'admin_student_detail' app.student.pk %}" style="font-weight: 700;">
+                                {{ app.student.usn }}
+                            </a>
+                        </td>
+                        <td>{{ app.student.department.code }}</td>
+                        <td style="font-size: 13px;">
+                            <div>CGPA: <strong>{{ app.student.cgpa }}</strong></div>
+                            <div style="font-size: 12px; color: {% if app.student.active_backlogs > 0 %}var(--danger){% else %}var(--ok){% endif %};">
+                                {{ app.student.active_backlogs }} backlog{{ app.student.active_backlogs|pluralize }}
+                            </div>
+                        </td>
+                        <td style="font-size: 13px;">{{ app.applied_at|date:"M d, Y" }}</td>
+                        <td>
+                            {% if app.resume or app.student.resume %}
+                                <a class="text-link" href="{% url 'admin_application_resume' app.pk %}" target="_blank" style="font-weight: 600;">
+                                    View Resume &rarr;
+                                </a>
+                            {% else %}
+                                <span class="muted">&mdash;</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if app.status == 'WITHDRAWN' %}
+                                <span class="status-badge status-withdrawn">Withdrawn</span>
+                            {% else %}
+                                <form method="post" action="{% url 'admin_application_status' app.pk %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                    <select name="status" class="status-select status-{{ app.status|lower }}" onchange="this.form.submit()" aria-label="Change Candidate Status">
+                                        {% for val, label in reviewable_choices %}
+                                            <option value="{{ val }}" {% if app.status == val %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a class="table-action-link" href="{% url 'admin_application_detail' app.pk %}">Details</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>No student applications received yet</h3>
+            <p>Applications will appear here once eligible students register for this placement drive.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

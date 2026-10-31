@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}{{ company.name }} | Partner Company Profile{% endblock %}
+{% block page_heading %}Partner Company Profile{% endblock %}
+
+{% block content %}
+<div class="welcome-row">
+    <div>
+        <a class="text-link" href="{% url 'admin_company_list' %}" style="display: inline-block; margin-bottom: 8px;">
+            &larr; Back to all partner companies
+        </a>
+        <h2 style="display: flex; align-items: center; gap: 12px;">
+            {{ company.name }}
+            <span class="status-badge" style="background: #f1f5f9; color: var(--navy); font-size: 13px;">
+                {{ company.industry }}
+            </span>
+        </h2>
+        <p>Registered Corporate Partner &bull; Added on {{ company.created_at|date:"F d, Y" }}</p>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <a class="primary-button" href="{% url 'admin_company_edit' company.pk %}">Edit Company</a>
+        {% if company.drives_count == 0 %}
+            <form method="post" action="{% url 'admin_company_delete' company.pk %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit"
+                        class="primary-button"
+                        style="background: #b42318; border-color: #b42318;"
+                        onclick="return confirm('Permanently delete partner company \'{{ company.name|escapejs }}\'? This cannot be undone.');">
+                    Delete Company
+                </button>
+            </form>
+        {% else %}
+            <button type="button"
+                    class="primary-button"
+                    style="background: #94a3b8; border-color: #94a3b8; cursor: not-allowed;"
+                    title="Cannot delete because {{ company.drives_count }} placement drive(s) exist for this company."
+                    disabled>
+                Protected ({{ company.drives_count }} Drives)
+            </button>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Quick Statistics Bar -->
+<div class="metrics-grid" style="margin-bottom: 24px;">
+    <div class="metric-card">
+        <span class="metric-label">Placement Drives</span>
+        <span class="metric-value">{{ company.drives_count }}</span>
+        <span class="metric-sub">Drives hosted</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-label">Total Applications</span>
+        <span class="metric-value">{{ total_applications }}</span>
+        <span class="metric-sub">Student submissions</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-label">Selected Students</span>
+        <span class="metric-value">{{ total_selected }}</span>
+        <span class="metric-sub">Offers extended</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-label">Corporate Website</span>
+        <span class="metric-value" style="font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            {% if company.website %}
+                <a class="text-link" href="{{ company.website }}" target="_blank" rel="noopener noreferrer" style="font-size: 14px;">
+                    Visit Official Site &nearr;
+                </a>
+            {% else %}
+                <span class="muted" style="font-size: 14px;">Not provided</span>
+            {% endif %}
+        </span>
+        <span class="metric-sub">External link</span>
+    </div>
+</div>
+
+<!-- Two-Column Company Info -->
+<div class="two-col" style="margin-bottom: 24px;">
+    <!-- Contact & Coordinates -->
+    <article class="panel">
+        <div class="panel-heading">
+            <h2>Primary Recruitment Coordinates</h2>
+            <p>Official communication channel for placement drives and campus interviews.</p>
+        </div>
+        <div class="record-grid">
+            <div>
+                <dt>Point of Contact / HR</dt>
+                <dd><strong>{{ company.contact_person|default:"Not specified" }}</strong></dd>
+            </div>
+            <div>
+                <dt>Industry Sector</dt>
+                <dd>{{ company.industry }}</dd>
+            </div>
+            <div>
+                <dt>Contact Email</dt>
+                <dd>
+                    {% if company.contact_email %}
+                        <a class="text-link" href="mailto:{{ company.contact_email }}">{{ company.contact_email }}</a>
+                    {% else %}
+                        <span class="muted">Not provided</span>
+                    {% endif %}
+                </dd>
+            </div>
+            <div>
+                <dt>Contact Phone</dt>
+                <dd>
+                    {% if company.contact_phone %}
+                        <a class="text-link" href="tel:{{ company.contact_phone }}">{{ company.contact_phone }}</a>
+                    {% else %}
+                        <span class="muted">Not provided</span>
+                    {% endif %}
+                </dd>
+            </div>
+            <div>
+                <dt>Website</dt>
+                <dd>
+                    {% if company.website %}
+                        <a class="text-link" href="{{ company.website }}" target="_blank" rel="noopener noreferrer">{{ company.website }}</a>
+                    {% else %}
+                        <span class="muted">Not provided</span>
+                    {% endif %}
+                </dd>
+            </div>
+            <div>
+                <dt>Database Record ID</dt>
+                <dd>#{{ company.pk }} (Created {{ company.created_at|date:"M d, Y" }})</dd>
+            </div>
+        </div>
+    </article>
+
+    <!-- Overview / Description -->
+    <article class="panel">
+        <div class="panel-heading">
+            <h2>About {{ company.name }}</h2>
+            <p>Organization background and notes for placement cell staff.</p>
+        </div>
+        <div style="padding: 16px 22px; font-size: 14px; line-height: 1.6; color: var(--text);">
+            {% if company.description %}
+                <p style="white-space: pre-line; margin: 0;">{{ company.description }}</p>
+            {% else %}
+                <p class="muted" style="margin: 0; font-style: italic;">No detailed description or notes entered for this company yet. You can add one using "Edit Company".</p>
+            {% endif %}
+        </div>
+    </article>
+</div>
+
+<!-- Associated Placement Drives -->
+<section class="panel">
+    <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2>Associated Placement Drives ({{ drives|length }})</h2>
+            <p>Historical and upcoming recruitment drives conducted by {{ company.name }}.</p>
+        </div>
+    </div>
+
+    {% if drives %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Drive Title / Role</th>
+                        <th>Category</th>
+                        <th>Package (LPA)</th>
+                        <th>Min CGPA</th>
+                        <th>Drive Date</th>
+                        <th>Deadline</th>
+                        <th>Status</th>
+                        <th>Applications</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for drive in drives %}
+                    <tr>
+                        <td>
+                            <strong>{{ drive.title }}</strong>
+                        </td>
+                        <td>
+                            <span class="status-badge" style="background: #e0f2fe; color: #0369a1;">
+                                {{ drive.get_category_display }}
+                            </span>
+                        </td>
+                        <td><strong>₹{{ drive.package_lpa }} LPA</strong></td>
+                        <td>{{ drive.minimum_cgpa }}</td>
+                        <td style="font-size: 13px;">{{ drive.drive_date|date:"M d, Y" }}</td>
+                        <td style="font-size: 13px;">{{ drive.application_deadline|date:"M d, Y" }}</td>
+                        <td>
+                            {% if drive.status == 'OPEN' %}
+                                <span class="status-badge status-active" style="background: var(--ok-soft); color: var(--ok);">Open</span>
+                            {% elif drive.status == 'CLOSED' %}
+                                <span class="status-badge" style="background: #fee2e2; color: #991b1b;">Closed</span>
+                            {% elif drive.status == 'COMPLETED' %}
+                                <span class="status-badge" style="background: #f1f5f9; color: #475569;">Completed</span>
+                            {% else %}
+                                <span class="status-badge" style="background: #fef3c7; color: #92400e;">Draft</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span style="font-weight: 600;">{{ drive.applications_count }}</span>
+                        </td>
+                        <td>
+                            <a class="table-action-link" href="{% url 'recruitment:drive_detail' drive.pk %}">View Drive</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>No placement drives recorded yet</h3>
+            <p>There are currently no campus recruitment drives associated with {{ company.name }}.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

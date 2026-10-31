@@ -1,9 +1,14 @@
 {% extends "public_base.html" %}
+{% load static %}
 
 {% block content %}
 <section class="hero">
     <div class="pub-wrap hero-grid">
         <div class="hero-copy">
+            <div class="hero-brand-pill">
+                <img src="{% static 'images/cpms_emblem.png' %}" alt="CPMS emblem" class="hero-brand-pill-icon" width="22" height="22">
+                <span>Campus Placement Management System</span>
+            </div>
             <h1>Your placement journey, tracked from first application to offer.</h1>
             <p class="hero-sub">CPMS brings campus drives, applications, interviews and training into one portal, so students always know where they stand and the placement office always knows who is next.</p>
             <div class="hero-cta">

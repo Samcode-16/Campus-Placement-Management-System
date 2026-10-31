@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Placement Drives | CPMS{% endblock %}
+{% block page_heading %}Placement Drives Management{% endblock %}
+
+{% block content %}
+<div class="welcome-row">
+    <div>
+        <h2>Campus Placement Drives</h2>
+        <p>Schedule recruitment drives, set eligibility cutoffs, track applications, and manage drive workflows.</p>
+    </div>
+    <div>
+        <a class="primary-button" href="{% url 'admin_drive_create' %}">+ Create Placement Drive</a>
+    </div>
+</div>
+
+<!-- Search & Multi-Faceted Filters -->
+<form method="get" class="training-filters" style="margin-bottom: 24px; gap: 12px; flex-wrap: wrap;">
+    <!-- Search Query -->
+    <div class="filter-field" style="flex: 2; min-width: 240px;">
+        <label for="search-input">Search Drives</label>
+        <input type="text"
+               id="search-input"
+               name="q"
+               value="{{ search_query }}"
+               placeholder="Search by drive title or company name..."
+               style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13.5px;">
+    </div>
+
+    <!-- Category Filter -->
+    <div class="filter-field" style="min-width: 150px;">
+        <label for="category-select">Category</label>
+        <select id="category-select" name="category">
+            <option value="">All Categories</option>
+            {% for val, label in category_choices %}
+                <option value="{{ val }}" {% if selected_category == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Status Filter -->
+    <div class="filter-field" style="min-width: 140px;">
+        <label for="status-select">Status</label>
+        <select id="status-select" name="status">
+            <option value="">All Statuses</option>
+            {% for val, label in status_choices %}
+                <option value="{{ val }}" {% if selected_status == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Company Filter -->
+    <div class="filter-field" style="min-width: 180px;">
+        <label for="company-select">Company</label>
+        <select id="company-select" name="company">
+            <option value="">All Companies</option>
+            {% for c in companies %}
+                <option value="{{ c.pk }}" {% if selected_company == c.pk %}selected{% endif %}>{{ c.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button type="submit" class="primary-button" style="align-self: flex-end;">Apply Filters</button>
+    {% if search_query or selected_category or selected_status or selected_company %}
+        <a class="reset-link" href="{% url 'admin_drive_list' %}" style="align-self: flex-end; padding-bottom: 10px;">Reset</a>
+    {% endif %}
+</form>
+
+<!-- Placement Drives Table Panel -->
+<section class="panel">
+    <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2>Registered Placement Drives</h2>
+            <p>Showing {{ page_obj.start_index|default:0 }} to {{ page_obj.end_index|default:0 }} of {{ total_count }} drive(s) found.</p>
+        </div>
+    </div>
+
+    {% if page_obj %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Drive Title & Company</th>
+                        <th>Category</th>
+                        <th>Package</th>
+                        <th>Eligibility Criteria</th>
+                        <th>Drive Date</th>
+                        <th>Deadline</th>
+                        <th>Applications</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for drive in page_obj %}
+                    <tr>
+                        <td>
+                            <strong>{{ drive.title }}</strong>
+                            <div style="font-size: 13px; color: var(--muted); margin-top: 2px;">
+                                <a class="text-link" href="{% url 'admin_company_detail' drive.company.pk %}" style="font-weight: 500;">
+                                    {{ drive.company.name }}
+                                </a>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="status-badge" style="background: #e0f2fe; color: #0369a1;">
+                                {{ drive.get_category_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <strong style="color: var(--navy);">₹{{ drive.package_lpa }} LPA</strong>
+                            <div style="font-size: 12px; color: var(--muted);">{{ drive.vacancies }} vacanc{{ drive.vacancies|pluralize:"y,ies" }}</div>
+                        </td>
+                        <td style="font-size: 12.5px;">
+                            <div>Min CGPA: <strong>{{ drive.minimum_cgpa }}</strong></div>
+                            <div>Max Backlogs: <strong>{{ drive.maximum_backlogs }}</strong></div>
+                        </td>
+                        <td style="font-size: 13px;">{{ drive.drive_date|date:"M d, Y" }}</td>
+                        <td style="font-size: 13px;">{{ drive.application_deadline|date:"M d, Y" }}</td>
+                        <td>
+                            <a href="{% url 'admin_drive_detail' drive.pk %}" style="text-decoration: none;">
+                                <strong style="color: var(--teal); font-size: 14px;">{{ drive.applications_count }}</strong>
+                                <span style="font-size: 12px; color: var(--muted);">applied</span>
+                            </a>
+                        </td>
+                        <td>
+                            {% if drive.status == 'OPEN' %}
+                                <span class="status-badge status-active" style="background: var(--ok-soft); color: var(--ok);">Open</span>
+                            {% elif drive.status == 'CLOSED' %}
+                                <span class="status-badge" style="background: #fee2e2; color: #991b1b;">Closed</span>
+                            {% elif drive.status == 'COMPLETED' %}
+                                <span class="status-badge" style="background: #f1f5f9; color: #475569;">Completed</span>
+                            {% else %}
+                                <span class="status-badge" style="background: #fef3c7; color: #92400e;">Draft</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div style="display: inline-flex; align-items: center; gap: 10px;">
+                                <a class="table-action-link" href="{% url 'admin_drive_detail' drive.pk %}">View</a>
+                                <a class="table-action-link" href="{% url 'admin_drive_edit' drive.pk %}">Edit</a>
+                                {% if drive.applications_count == 0 %}
+                                    <form method="post" action="{% url 'admin_drive_delete' drive.pk %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit"
+                                                class="link-button"
+                                                style="color: var(--danger); font-size: 12.5px; padding: 0; background: none; border: none; cursor: pointer;"
+                                                onclick="return confirm('Permanently delete placement drive \'{{ drive.title|escapejs }}\'? This cannot be undone.');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span style="font-size: 12px; color: var(--muted); cursor: help;"
+                                          title="Cannot delete: {{ drive.applications_count }} student application(s) exist for this drive.">
+                                        Protected
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        {% if page_obj.has_other_pages %}
+        <div class="pagination-wrapper">
+            <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            <div class="pagination-nav">
+                {% if page_obj.has_previous %}
+                    <a class="page-btn" href="?page=1{% if query_string %}&{{ query_string }}{% endif %}">&laquo; First</a>
+                    <a class="page-btn" href="?page={{ page_obj.previous_page_number }}{% if query_string %}&{{ query_string }}{% endif %}">&lsaquo; Prev</a>
+                {% else %}
+                    <span class="page-btn disabled">&laquo; First</span>
+                    <span class="page-btn disabled">&lsaquo; Prev</span>
+                {% endif %}
+
+                {% for p in page_obj.paginator.page_range %}
+                    {% if p >= page_obj.number|add:"-2" and p <= page_obj.number|add:"2" %}
+                        {% if p == page_obj.number %}
+                            <span class="page-btn active">{{ p }}</span>
+                        {% else %}
+                            <a class="page-btn" href="?page={{ p }}{% if query_string %}&{{ query_string }}{% endif %}">{{ p }}</a>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <a class="page-btn" href="?page={{ page_obj.next_page_number }}{% if query_string %}&{{ query_string }}{% endif %}">Next &rsaquo;</a>
+                    <a class="page-btn" href="?page={{ page_obj.paginator.num_pages }}{% if query_string %}&{{ query_string }}{% endif %}">Last &raquo;</a>
+                {% else %}
+                    <span class="page-btn disabled">Next &rsaquo;</span>
+                    <span class="page-btn disabled">Last &raquo;</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+    {% else %}
+        <div class="empty-state">
+            <h3>No placement drives match your criteria</h3>
+            {% if search_query or selected_category or selected_status or selected_company %}
+                <p>Try modifying your search query or clearing the active filters.</p>
+                <a class="text-link" href="{% url 'admin_drive_list' %}">Reset filters</a>
+            {% else %}
+                <p>No campus recruitment drives have been created yet. Launch your first drive now.</p>
+                <a class="primary-button" href="{% url 'admin_drive_create' %}" style="display: inline-block; margin-top: 10px;">+ Create Placement Drive</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

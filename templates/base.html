@@ -4,29 +4,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}CPMS | Campus Placement{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=3">
+    <title>{% block title %}CPMS | Campus Placement Management System{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=4">
 </head>
 <body>
     {% with page=request.resolver_match.url_name %}
     <div class="app-shell">
         <aside class="sidebar">
             <a class="brand" href="/">
-                <span class="brand-mark">C</span>
+                <span class="brand-mark">
+                    <img src="{% static 'images/cpms_emblem.png' %}" alt="CPMS" class="brand-logo-img">
+                </span>
                 <span>
                     <strong>CPMS</strong>
                     <small>Campus Placement</small>
                 </span>
             </a>
 
-            {% if user.is_staff %}
-            <p class="nav-label">Placement office</p>
+            {% if user.is_staff or user.is_superuser %}
+            <p class="nav-label">Administrator</p>
             <nav class="navigation">
-                <a data-icon="grid" class="nav-link {% if page == 'staff_dashboard' %}active{% endif %}" href="{% url 'accounts:staff_dashboard' %}">Dashboard</a>
-                <a data-icon="briefcase" class="nav-link {% if page == 'placement_drives' or page == 'drive_detail' %}active{% endif %}" href="{% url 'recruitment:placement_drives' %}">Placement Drives</a>
-                <a data-icon="file" class="nav-link {% if page == 'manage_applications' %}active{% endif %}" href="{% url 'recruitment:manage_applications' %}">Applications</a>
+                <a data-icon="grid" class="nav-link {% if page == 'staff_dashboard' or page == 'admin_dashboard' %}active{% endif %}" href="{% url 'admin_dashboard' %}">Dashboard</a>
+                <a data-icon="user" class="nav-link {% if 'admin_student' in page %}active{% endif %}" href="{% url 'admin_student_list' %}">Students</a>
+                <a data-icon="briefcase" class="nav-link {% if 'admin_company' in page %}active{% endif %}" href="{% url 'admin_company_list' %}">Companies</a>
+                <a data-icon="briefcase" class="nav-link {% if 'admin_drive' in page or page == 'placement_drives' or page == 'drive_detail' %}active{% endif %}" href="{% url 'admin_drive_list' %}">Placement Drives</a>
+                <a data-icon="file" class="nav-link {% if 'admin_application' in page or page == 'manage_applications' %}active{% endif %}" href="{% url 'admin_application_list' %}">Applications</a>
                 <a data-icon="book" class="nav-link {% if page == 'training_programs' %}active{% endif %}" href="{% url 'training:training_programs' %}">Training Programs</a>
-                <a data-icon="shield" class="nav-link" href="/admin/">Administration</a>
             </nav>
             {% else %}
             <p class="nav-label">Student</p>
@@ -52,7 +59,7 @@
                     <span class="avatar" aria-hidden="true">{{ user.username|slice:":1"|upper }}</span>
                     <span>
                         <strong>{{ user.get_full_name|default:user.username }}</strong>
-                        <small>{% if user.is_staff %}Placement Officer{% else %}Student{% endif %}</small>
+                        <small>{% if user.is_staff or user.is_superuser %}Administrator{% else %}Student{% endif %}</small>
                     </span>
                     <form method="post" action="{% url 'accounts:logout' %}" class="logout-form">
                         {% csrf_token %}

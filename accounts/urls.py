@@ -34,5 +34,5 @@ urlpatterns = [
     path("staff/", views.dashboard_view, name="staff_dashboard"),
 
     # Shared
-    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+    path("logout/", views.CustomLogoutView.as_view(), name="logout"),
 ]

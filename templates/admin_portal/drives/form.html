@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Placement Drives Management | CPMS{% endblock %}
+{% block page_heading %}{{ action_title }}{% endblock %}
+
+{% block content %}
+<div class="welcome-row">
+    <div>
+        {% if drive %}
+            <a class="text-link" href="{% url 'admin_drive_detail' drive.pk %}" style="display: inline-block; margin-bottom: 8px;">
+                &larr; Back to {{ drive.title }} Details
+            </a>
+        {% else %}
+            <a class="text-link" href="{% url 'admin_drive_list' %}" style="display: inline-block; margin-bottom: 8px;">
+                &larr; Back to Drives Directory
+            </a>
+        {% endif %}
+        <h2>{{ action_title }}</h2>
+        <p>Configure recruitment parameters, eligibility criteria, department access, and schedule milestones.</p>
+    </div>
+</div>
+
+<div style="max-width: 860px;">
+    <section class="panel">
+        <div class="panel-heading">
+            <h2>Drive Specifications & Parameters</h2>
+            <p>Ensure academic criteria and deadlines are correctly configured for student eligibility checks.</p>
+        </div>
+
+        <form method="post" class="stack-form padded" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="form-errors">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <h3 style="font-size: 15px; color: var(--navy); margin: 0; padding-bottom: 6px; border-bottom: 1px solid var(--border);">
+                Role & Organization
+            </h3>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+                <div class="field">
+                    <label for="{{ form.company.id_for_label }}">Partner Company *</label>
+                    {{ form.company }}
+                    {% for error in form.company.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.title.id_for_label }}">Drive Title / Role Name *</label>
+                    {{ form.title }}
+                    {% for error in form.title.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
+                <div class="field">
+                    <label for="{{ form.category.id_for_label }}">Industry Sector *</label>
+                    {{ form.category }}
+                    {% for error in form.category.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.package_lpa.id_for_label }}">Package (₹ LPA) *</label>
+                    {{ form.package_lpa }}
+                    {% for error in form.package_lpa.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.vacancies.id_for_label }}">Vacancies *</label>
+                    {{ form.vacancies }}
+                    {% for error in form.vacancies.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.status.id_for_label }}">Drive Status *</label>
+                    {{ form.status }}
+                    {% for error in form.status.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </div>
+            </div>
+
+            <h3 style="font-size: 15px; color: var(--navy); margin: 16px 0 0 0; padding-bottom: 6px; border-bottom: 1px solid var(--border);">
+                Academic Eligibility Criteria
+            </h3>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+                <div class="field">
+                    <label for="{{ form.minimum_cgpa.id_for_label }}">Minimum CGPA Cutoff (0.00 - 10.00) *</label>
+                    {{ form.minimum_cgpa }}
+                    {% for error in form.minimum_cgpa.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.maximum_backlogs.id_for_label }}">Maximum Active Backlogs Allowed *</label>
+                    {{ form.maximum_backlogs }}
+                    {% for error in form.maximum_backlogs.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="{{ form.eligible_departments.id_for_label }}">Eligible Academic Departments</label>
+                {{ form.eligible_departments }}
+                <span class="field-help">Hold Ctrl (Windows) or Cmd (Mac) to select multiple departments. Leave blank to allow all departments.</span>
+                {% for error in form.eligible_departments.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+            </div>
+
+            <h3 style="font-size: 15px; color: var(--navy); margin: 16px 0 0 0; padding-bottom: 6px; border-bottom: 1px solid var(--border);">
+                Drive Schedule & Deadlines
+            </h3>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+                <div class="field">
+                    <label for="{{ form.application_deadline.id_for_label }}">Application Deadline *</label>
+                    {{ form.application_deadline }}
+                    {% for error in form.application_deadline.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.drive_date.id_for_label }}">Drive Date & Time *</label>
+                    {{ form.drive_date }}
+                    {% for error in form.drive_date.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </div>
+            </div>
+
+            <h3 style="font-size: 15px; color: var(--navy); margin: 16px 0 0 0; padding-bottom: 6px; border-bottom: 1px solid var(--border);">
+                Job Description & Requirements
+            </h3>
+
+            <div class="field">
+                <label for="{{ form.job_description.id_for_label }}">Job Description *</label>
+                {{ form.job_description }}
+                {% for error in form.job_description.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+            </div>
+
+            <div class="button-row" style="margin-top: 14px;">
+                <button type="submit" class="primary-button">
+                    {% if drive %}Save Drive Changes{% else %}Publish Placement Drive{% endif %}
+                </button>
+                {% if drive %}
+                    <a href="{% url 'admin_drive_detail' drive.pk %}" style="display: inline-block; padding: 10px 18px; border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--navy); font-weight: 500; font-size: 13.5px; text-decoration: none; background: #fff;">
+                        Cancel
+                    </a>
+                {% else %}
+                    <a href="{% url 'admin_drive_list' %}" style="display: inline-block; padding: 10px 18px; border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--navy); font-weight: 500; font-size: 13.5px; text-decoration: none; background: #fff;">
+                        Cancel
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}

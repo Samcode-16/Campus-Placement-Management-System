@@ -1,0 +1,19 @@
+{% extends "public_base.html" %}
+
+{% block title %}403 Forbidden | CPMS{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="pub-wrap" style="text-align: center; max-width: 600px; margin: 40px auto;">
+        <h1 style="font-size: 64px; color: var(--navy); margin-bottom: 8px;">403</h1>
+        <h2>Access Denied</h2>
+        <p style="color: var(--muted); margin: 16px 0 28px;">
+            You do not have the required permissions to access this administrative resource.
+        </p>
+        <div style="display: flex; gap: 12px; justify-content: center;">
+            <a class="btn btn-teal" href="{% url 'home' %}">Return to Dashboard</a>
+            <a class="btn btn-ghost" href="{% url 'accounts:login' %}">Sign In with Another Account</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

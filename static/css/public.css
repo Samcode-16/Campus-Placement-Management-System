@@ -39,11 +39,36 @@ body.public { background: #fff; }
 .pub-brand-text small { margin-top: 2px; color: var(--muted); font-size: 12px; }
 .pub-brand.light { color: #fff; }
 .pub-brand.light small { color: #b4c1d6; }
+.pub-brand.light .brand-mark {
+    background: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
 .pub-actions { display: flex; align-items: center; gap: 8px; }
 .pub-messages { max-width: 1140px; margin: 16px auto 0; padding: 0 24px; }
 
 /* ---------- Hero ---------- */
 .hero { padding: 72px 0 80px; background: var(--background); border-bottom: 1px solid var(--border); }
+.hero-brand-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 14px 6px 8px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--navy);
+    box-shadow: 0 1px 4px rgba(20, 40, 75, 0.05);
+    margin-bottom: 22px;
+}
+.hero-brand-pill-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    display: block;
+}
 .hero-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 64px; align-items: center; }
 .hero h1 { max-width: 15em; margin: 0 0 20px; color: var(--navy); font-size: clamp(32px, 4.2vw, 48px); font-weight: 750; letter-spacing: -1.2px; line-height: 1.08; }
 .hero-sub { max-width: 34em; margin: 0 0 30px; color: #44546b; font-size: 18px; line-height: 1.6; }

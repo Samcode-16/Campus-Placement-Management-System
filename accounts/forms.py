@@ -30,7 +30,8 @@ class StudentLoginForm(_LoginFormMixin, AuthenticationForm):
 
     def confirm_login_allowed(self, user):
         super().confirm_login_allowed(user)
-        if user.is_staff or not hasattr(user, "student_profile"):
+        from accounts.decorators import is_admin
+        if is_admin(user) or not hasattr(user, "student_profile"):
             raise forms.ValidationError(
                 "This is not a student account. "
                 "Placement officers should use the Placement Officer login.",
@@ -43,7 +44,8 @@ class StaffLoginForm(_LoginFormMixin, AuthenticationForm):
 
     def confirm_login_allowed(self, user):
         super().confirm_login_allowed(user)
-        if not user.is_staff:
+        from accounts.decorators import is_admin
+        if not is_admin(user):
             raise forms.ValidationError(
                 "This account does not have placement officer access. "
                 "Students should use the Student login.",
@@ -128,7 +130,16 @@ class StudentRegistrationForm(UserCreationForm):
 
     @transaction.atomic
     def save(self, commit=True):
-        user = super().save(commit=True)
+        from accounts.roles import assign_student_role
+
+        user = super().save(commit=False)
+        # Security: explicitly prevent users from assigning themselves admin/staff privileges
+        user.is_staff = False
+        user.is_superuser = False
+        user.save()
+
+        assign_student_role(user)
+
         StudentProfile.objects.create(
             user=user,
             usn=self.cleaned_data["usn"],
@@ -168,3 +179,93 @@ class StudentProfileForm(forms.ModelForm):
 
     def clean_resume(self):
         return validate_resume_file(self.cleaned_data.get("resume"))
+
+
+class AdminStudentEditForm(forms.ModelForm):
+    """Administrator form to update academic and contact details for a student.
+    Passwords are never exposed or editable here.
+    """
+    first_name = forms.CharField(max_length=150, required=True, label="First Name")
+    last_name = forms.CharField(max_length=150, required=True, label="Last Name")
+    email = forms.EmailField(required=True, label="Email Address")
+    is_active = forms.BooleanField(
+        required=False,
+        label="Account Active",
+        help_text="Uncheck to deactivate or suspend this student's portal access."
+    )
+
+    class Meta:
+        model = StudentProfile
+        fields = (
+            "department",
+            "graduation_year",
+            "cgpa",
+            "active_backlogs",
+            "phone",
+            "resume",
+        )
+        labels = {
+            "department": "Department",
+            "graduation_year": "Graduation Year",
+            "cgpa": "CGPA (0.00 - 10.00)",
+            "active_backlogs": "Active Backlogs",
+            "phone": "Phone Number",
+            "resume": "Upload New Resume",
+        }
+        widgets = {
+            "phone": forms.TextInput(attrs={"inputmode": "tel", "placeholder": "e.g. 9845012345"}),
+            "resume": forms.FileInput(attrs={"accept": ".pdf,.doc,.docx"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.user:
+            self.fields["first_name"].initial = self.instance.user.first_name
+            self.fields["last_name"].initial = self.instance.user.last_name
+            self.fields["email"].initial = self.instance.user.email
+            self.fields["is_active"].initial = self.instance.user.is_active
+
+    def clean_cgpa(self):
+        cgpa = self.cleaned_data["cgpa"]
+        if cgpa < 0 or cgpa > 10:
+            raise forms.ValidationError("CGPA must be between 0.00 and 10.00.")
+        return cgpa
+
+    def clean_active_backlogs(self):
+        backlogs = self.cleaned_data["active_backlogs"]
+        if backlogs < 0:
+            raise forms.ValidationError("Active backlogs cannot be negative.")
+        return backlogs
+
+    def clean_phone(self):
+        phone = self.cleaned_data["phone"].strip()
+        if phone and not re.fullmatch(r"\+?[0-9 \-]{8,15}", phone):
+            raise forms.ValidationError("Enter a valid phone number (8 to 15 digits).")
+        return phone
+
+    def clean_email(self):
+        email = self.cleaned_data["email"].strip().lower()
+        if (
+            User.objects.filter(email__iexact=email)
+            .exclude(pk=self.instance.user_id)
+            .exists()
+        ):
+            raise forms.ValidationError("Another account is already using this email address.")
+        return email
+
+    def clean_resume(self):
+        return validate_resume_file(self.cleaned_data.get("resume"))
+
+    @transaction.atomic
+    def save(self, commit=True):
+        profile = super().save(commit=False)
+        user = profile.user
+        user.first_name = self.cleaned_data["first_name"]
+        user.last_name = self.cleaned_data["last_name"]
+        user.email = self.cleaned_data["email"]
+        user.is_active = self.cleaned_data["is_active"]
+        user.save()
+        if commit:
+            profile.save()
+        return profile
+

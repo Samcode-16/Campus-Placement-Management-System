@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Applications | CPMS{% endblock %}
+{% block page_heading %}Student Applications Management{% endblock %}
+
+{% block content %}
+<div class="welcome-row">
+    <div>
+        <h2>Applications Tracking & Review</h2>
+        <p>Review student submissions, evaluate candidate credentials, verify resumes, and advance candidates through recruitment stages.</p>
+    </div>
+</div>
+
+<!-- Search & Multi-Faceted Filters -->
+<form method="get" class="training-filters" style="margin-bottom: 24px; gap: 12px; flex-wrap: wrap;">
+    <!-- Search Query -->
+    <div class="filter-field" style="flex: 2; min-width: 240px;">
+        <label for="search-input">Search Candidates</label>
+        <input type="text"
+               id="search-input"
+               name="q"
+               value="{{ search_query }}"
+               placeholder="Search by student name or USN..."
+               style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13.5px;">
+    </div>
+
+    <!-- Company Filter -->
+    <div class="filter-field" style="min-width: 170px;">
+        <label for="company-select">Company</label>
+        <select id="company-select" name="company">
+            <option value="">All Companies</option>
+            {% for c in companies %}
+                <option value="{{ c.pk }}" {% if selected_company == c.pk %}selected{% endif %}>{{ c.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Drive Filter -->
+    <div class="filter-field" style="min-width: 190px;">
+        <label for="drive-select">Placement Drive</label>
+        <select id="drive-select" name="drive">
+            <option value="">All Placement Drives</option>
+            {% for d in drives %}
+                <option value="{{ d.pk }}" {% if selected_drive == d.pk %}selected{% endif %}>{{ d.company.name }} - {{ d.title }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Department Filter -->
+    <div class="filter-field" style="min-width: 150px;">
+        <label for="dept-select">Department</label>
+        <select id="dept-select" name="department">
+            <option value="">All Departments</option>
+            {% for dept in departments %}
+                <option value="{{ dept.pk }}" {% if selected_dept == dept.pk %}selected{% endif %}>{{ dept.code }} - {{ dept.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Status Filter -->
+    <div class="filter-field" style="min-width: 140px;">
+        <label for="status-select">Status</label>
+        <select id="status-select" name="status">
+            <option value="">All Statuses</option>
+            {% for val, label in status_choices %}
+                <option value="{{ val }}" {% if selected_status == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button type="submit" class="primary-button" style="align-self: flex-end;">Apply Filters</button>
+    {% if search_query or selected_company or selected_drive or selected_dept or selected_status %}
+        <a class="reset-link" href="{% url 'admin_application_list' %}" style="align-self: flex-end; padding-bottom: 10px;">Reset</a>
+    {% endif %}
+</form>
+
+<!-- Applications Table Panel -->
+<section class="panel">
+    <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2>Submitted Applications</h2>
+            <p>Showing {{ page_obj.start_index|default:0 }} to {{ page_obj.end_index|default:0 }} of {{ total_count }} student application(s) found.</p>
+        </div>
+    </div>
+
+    {% if page_obj %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>USN</th>
+                        <th>Department</th>
+                        <th>Placement Drive</th>
+                        <th>Company</th>
+                        <th>Applied On</th>
+                        <th>Resume</th>
+                        <th>Application Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in page_obj %}
+                    <tr>
+                        <td class="student-meta-cell">
+                            <strong>{{ app.student.user.get_full_name|default:app.student.user.username }}</strong>
+                            <small>@{{ app.student.user.username }}</small>
+                        </td>
+                        <td>
+                            <a class="text-link" href="{% url 'admin_student_detail' app.student.pk %}" style="font-weight: 700;">
+                                {{ app.student.usn }}
+                            </a>
+                        </td>
+                        <td>{{ app.student.department.code }}</td>
+                        <td>
+                            <a class="text-link" href="{% url 'admin_drive_detail' app.drive.pk %}">
+                                <strong>{{ app.drive.title }}</strong>
+                            </a>
+                            <div style="font-size: 12px; color: var(--muted);">₹{{ app.drive.package_lpa }} LPA</div>
+                        </td>
+                        <td>
+                            <a class="text-link" href="{% url 'admin_company_detail' app.drive.company.pk %}">
+                                {{ app.drive.company.name }}
+                            </a>
+                        </td>
+                        <td style="font-size: 13px;">{{ app.applied_at|date:"M d, Y" }}</td>
+                        <td>
+                            {% if app.resume or app.student.resume %}
+                                <a class="text-link" href="{% url 'admin_application_resume' app.pk %}" target="_blank" style="font-weight: 600;">
+                                    View Resume &rarr;
+                                </a>
+                            {% else %}
+                                <span class="muted">&mdash;</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if app.status == 'WITHDRAWN' %}
+                                <span class="status-badge status-withdrawn">Withdrawn</span>
+                            {% else %}
+                                <form method="post" action="{% url 'admin_application_status' app.pk %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                    <select name="status" class="status-select status-{{ app.status|lower }}" onchange="this.form.submit()" aria-label="Change Application Status">
+                                        {% for val, label in reviewable_choices %}
+                                            <option value="{{ val }}" {% if app.status == val %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div style="display: inline-flex; align-items: center; gap: 8px;">
+                                <a class="table-action-link" href="{% url 'admin_application_detail' app.pk %}">Details</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        {% if page_obj.has_other_pages %}
+        <div class="pagination-wrapper">
+            <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            <div class="pagination-nav">
+                {% if page_obj.has_previous %}
+                    <a class="page-btn" href="?page=1{% if query_string %}&{{ query_string }}{% endif %}">&laquo; First</a>
+                    <a class="page-btn" href="?page={{ page_obj.previous_page_number }}{% if query_string %}&{{ query_string }}{% endif %}">&lsaquo; Prev</a>
+                {% else %}
+                    <span class="page-btn disabled">&laquo; First</span>
+                    <span class="page-btn disabled">&lsaquo; Prev</span>
+                {% endif %}
+
+                {% for p in page_obj.paginator.page_range %}
+                    {% if p >= page_obj.number|add:"-2" and p <= page_obj.number|add:"2" %}
+                        {% if p == page_obj.number %}
+                            <span class="page-btn active">{{ p }}</span>
+                        {% else %}
+                            <a class="page-btn" href="?page={{ p }}{% if query_string %}&{{ query_string }}{% endif %}">{{ p }}</a>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <a class="page-btn" href="?page={{ page_obj.next_page_number }}{% if query_string %}&{{ query_string }}{% endif %}">Next &rsaquo;</a>
+                    <a class="page-btn" href="?page={{ page_obj.paginator.num_pages }}{% if query_string %}&{{ query_string }}{% endif %}">Last &raquo;</a>
+                {% else %}
+                    <span class="page-btn disabled">Next &rsaquo;</span>
+                    <span class="page-btn disabled">Last &raquo;</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+    {% else %}
+        <div class="empty-state">
+            <h3>No student applications found</h3>
+            {% if search_query or selected_company or selected_drive or selected_dept or selected_status %}
+                <p>No applications match the search or filter criteria. Try resetting filters.</p>
+                <a class="text-link" href="{% url 'admin_application_list' %}">Reset all filters</a>
+            {% else %}
+                <p>No students have submitted applications yet. Active applications will be displayed here once submitted.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

@@ -93,14 +93,31 @@ h1, h2, h3 { line-height: 1.25; }
 }
 
 .brand-mark {
-    display: grid;
-    place-items: center;
-    width: 40px; height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
     border-radius: 10px;
-    background: #14958b;
-    color: white;
-    font-size: 22px;
-    font-weight: 700;
+    background: #ffffff;
+    border: 1px solid rgba(227, 232, 239, 0.9);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(15, 118, 110, 0.08);
+    overflow: hidden;
+    padding: 3px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.brand:hover .brand-mark,
+.pub-brand:hover .brand-mark {
+    transform: scale(1.05);
+}
+
+.brand-mark .brand-logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
 }
 
 .brand strong, .brand small,
@@ -580,6 +597,339 @@ button.primary-button { border: 0; cursor: pointer; font: inherit; font-size: 13
     .record-grid { grid-template-columns: 1fr; }
     .record-grid > div:nth-last-child(-n+2) { border-bottom: 1px solid var(--border); }
     .record-grid > div:last-child { border-bottom: 0; }
+}
+
+/* ---------- Admin Dashboard Enhancements ---------- */
+.stat-card.link-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.stat-card.link-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(20, 40, 75, 0.08);
+    border-color: #cbd5e1;
+}
+.stat-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.stat-icon-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--teal-soft);
+    color: var(--teal);
+    font-size: 14px;
+    font-weight: 700;
+}
+.stat-card-link-text {
+    margin-top: auto;
+    padding-top: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--teal);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.stat-card.link-card:hover .stat-card-link-text {
+    text-decoration: underline;
+}
+
+/* Section headings */
+.dashboard-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 28px 0 16px;
+}
+.dashboard-section-head h2 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--navy);
+}
+.dashboard-section-head p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* Visualization Cards */
+.chart-card {
+    padding: 22px;
+}
+.chart-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.chart-card-head h3 {
+    margin: 0;
+    font-size: 15.5px;
+    font-weight: 650;
+    color: var(--navy);
+}
+.chart-card-head p {
+    margin: 4px 0 0;
+    font-size: 12.5px;
+    color: var(--muted);
+}
+.chart-pill {
+    padding: 3px 9px;
+    background: #f1f5f9;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+/* Multi-segment stacked bar */
+.stacked-bar-container {
+    margin-bottom: 18px;
+}
+.stacked-bar {
+    display: flex;
+    height: 14px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #eef2f6;
+}
+.stacked-segment {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+/* Legend items */
+.chart-legend-grid {
+    display: grid;
+    gap: 10px;
+}
+.legend-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+}
+.legend-label-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.legend-values {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.legend-count {
+    font-weight: 600;
+    color: var(--navy);
+}
+.legend-pct {
+    font-size: 12px;
+    color: var(--muted);
+    background: #f1f5f9;
+    padding: 1px 6px;
+    border-radius: 4px;
+}
+
+/* Category comparison bars */
+.category-bars-list {
+    display: grid;
+    gap: 14px;
+}
+.category-bar-item {
+    display: grid;
+    gap: 6px;
+}
+.category-bar-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+}
+.category-bar-labels strong {
+    color: var(--text);
+    font-weight: 600;
+}
+.category-bar-track {
+    height: 10px;
+    border-radius: 999px;
+    background: #eef2f6;
+    overflow: hidden;
+}
+.category-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.3s ease;
+}
+
+/* Selection ratio gauge card */
+.ratio-display {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 14px 18px;
+    background: #f8fafc;
+    border-radius: var(--radius-sm);
+    margin-bottom: 18px;
+}
+.ratio-big-pct {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--ok);
+    line-height: 1;
+}
+.ratio-subtext strong {
+    display: block;
+    font-size: 13.5px;
+    color: var(--navy);
+}
+.ratio-subtext small {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+/* Monthly trend chart */
+.trend-bars-wrapper {
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+    height: 140px;
+    padding: 16px 8px 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 10px;
+}
+.trend-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+}
+.trend-bar-pillar {
+    width: 100%;
+    max-width: 44px;
+    background: linear-gradient(180deg, var(--teal) 0%, var(--navy) 100%);
+    border-radius: 6px 6px 0 0;
+    transition: height 0.3s ease;
+    min-height: 6px;
+    position: relative;
+}
+.trend-col-count {
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--navy);
+}
+.trend-col-label {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+}
+
+/* Quick review links in activity tables */
+.table-action-link {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--teal);
+}
+.table-action-link:hover {
+    text-decoration: underline;
+}
+.student-meta-cell strong {
+    display: block;
+    color: var(--navy);
+}
+.student-meta-cell small {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 1px;
+}
+
+/* Phase 3 Pagination & Badges */
+.pagination-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--muted);
+    background: #fafbfd;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.pagination-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 11px;
+    font-size: 13px;
+    font-weight: 550;
+    color: var(--navy);
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    transition: all 0.15s ease;
+    min-width: 32px;
+    height: 32px;
+}
+.page-btn:hover:not(.disabled):not(.active) {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: var(--navy);
+}
+.page-btn.active {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: #fff;
+    cursor: default;
+}
+.page-btn.disabled {
+    color: #94a3b8;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+.status-active {
+    background: var(--ok-soft) !important;
+    color: var(--ok) !important;
+}
+.status-inactive {
+    background: var(--danger-soft) !important;
+    color: var(--danger) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
