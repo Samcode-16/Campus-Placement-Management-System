@@ -138,8 +138,6 @@ Open <http://127.0.0.1:8000/> and sign in with the [demo credentials](#demo-cred
 
 ## Screenshots
 
-> Add your images to `docs/screenshots/` and they will render below.
-
 | Admin Dashboard | Student Dashboard |
 | :---: | :---: |
 | ![Admin Dashboard](docs/screenshots/admin-dashboard.png) | ![Student Dashboard](docs/screenshots/student-dashboard.png) |
@@ -241,22 +239,158 @@ Views <-> Media storage (media/resumes/)
 
 ## Data Model
 
-Simplified entity relationships across the apps:
+The portal is backed by 10 relational models (plus Django's built-in `User`) organized across 3 apps (`accounts`, `recruitment`, and `training`), linked with strict foreign key protections and database constraints:
 
 ```mermaid
 erDiagram
-    DEPARTMENT ||--o{ STUDENTPROFILE : has
-    COMPANY ||--o{ PLACEMENTDRIVE : hosts
-    PLACEMENTDRIVE ||--o{ APPLICATION : receives
-    STUDENTPROFILE ||--o{ APPLICATION : submits
-    APPLICATION ||--o{ INTERVIEWROUND : has
-    APPLICATION ||--o| PLACEMENTOFFER : results_in
-    TRAININGPROGRAM ||--o{ TRAININGENROLLMENT : enrolls
-    STUDENTPROFILE ||--o{ TRAININGENROLLMENT : joins
-    TRAININGENROLLMENT ||--o{ TRAININGATTENDANCE : records
+    USER ||--|| STUDENTPROFILE : "has profile (OneToOne)"
+    DEPARTMENT ||--o{ STUDENTPROFILE : "belongs to (PROTECT)"
+    DEPARTMENT }o--o{ PLACEMENTDRIVE : "eligible departments (M2M)"
+    COMPANY ||--o{ PLACEMENTDRIVE : "schedules (PROTECT)"
+    PLACEMENTDRIVE ||--o{ APPLICATION : "receives (PROTECT)"
+    STUDENTPROFILE ||--o{ APPLICATION : "submits (PROTECT)"
+    APPLICATION ||--o{ INTERVIEWROUND : "conducts (CASCADE)"
+    APPLICATION ||--o| PLACEMENTOFFER : "results in offer (OneToOne, PROTECT)"
+    TRAININGPROGRAM ||--o{ TRAININGENROLLMENT : "offers (PROTECT)"
+    STUDENTPROFILE ||--o{ TRAININGENROLLMENT : "registers for (PROTECT)"
+    TRAININGENROLLMENT ||--o{ TRAININGATTENDANCE : "tracks attendance (CASCADE)"
+
+    USER {
+        int id PK
+        string username UK
+        string email
+        string first_name
+        string last_name
+        boolean is_staff
+        boolean is_active
+    }
+
+    DEPARTMENT {
+        int id PK
+        string code UK "BCA, MCA, BTECH"
+        string name UK
+        text description
+    }
+
+    STUDENTPROFILE {
+        int id PK
+        int user_id FK,UK "OneToOne -> User"
+        int department_id FK "PROTECT -> Department"
+        string usn UK "University Seat Number"
+        smallint graduation_year
+        decimal cgpa "0.00 to 10.00"
+        smallint active_backlogs "Default 0"
+        string phone
+        file resume "resumes/"
+        datetime consent_accepted_at
+        string consent_version
+        datetime created_at
+    }
+
+    COMPANY {
+        int id PK
+        string name UK
+        string industry
+        url website
+        string contact_person
+        email contact_email
+        string contact_phone
+        text description
+        datetime created_at
+    }
+
+    PLACEMENTDRIVE {
+        int id PK
+        int company_id FK "PROTECT -> Company"
+        string title
+        string category "IT, CORE, BANKING"
+        text job_description
+        decimal package_lpa "min: 0"
+        decimal minimum_cgpa "0.00 to 10.00"
+        smallint maximum_backlogs "Default 0"
+        datetime application_deadline
+        datetime drive_date
+        int vacancies "Default 1"
+        string status "DRAFT, OPEN, CLOSED, COMPLETED"
+        datetime created_at
+    }
+
+    APPLICATION {
+        int id PK
+        int student_id FK "PROTECT -> StudentProfile"
+        int drive_id FK "PROTECT -> PlacementDrive"
+        file resume "application_resumes/"
+        string status "APPLIED, SHORTLISTED, SELECTED, REJECTED, WITHDRAWN"
+        datetime applied_at
+    }
+
+    INTERVIEWROUND {
+        int id PK
+        int application_id FK "CASCADE -> Application"
+        string round_type "APTITUDE, TECHNICAL, HR, GD, OTHER"
+        datetime scheduled_at
+        string venue
+        string result "PENDING, CLEARED, FAILED"
+        text remarks
+    }
+
+    PLACEMENTOFFER {
+        int id PK
+        int application_id FK,UK "OneToOne, PROTECT -> Application"
+        decimal offered_package_lpa "min: 0"
+        date offer_date
+        date joining_date
+        boolean accepted
+        text remarks
+    }
+
+    TRAININGPROGRAM {
+        int id PK
+        string title
+        text description
+        string trainer
+        string mode "ONLINE, OFFLINE, HYBRID"
+        date start_date
+        date end_date
+        int capacity "Default 30"
+        string status "UPCOMING, ONGOING, COMPLETED, CANCELLED"
+        datetime created_at
+    }
+
+    TRAININGENROLLMENT {
+        int id PK
+        int student_id FK "PROTECT -> StudentProfile"
+        int program_id FK "PROTECT -> TrainingProgram"
+        datetime enrolled_at
+        decimal attendance_percentage "0.00 to 100.00"
+        decimal assessment_score "0.00 to 100.00"
+        string completion_status "ENROLLED, IN_PROGRESS, COMPLETED, DROPPED"
+    }
+
+    TRAININGATTENDANCE {
+        int id PK
+        int enrollment_id FK "CASCADE -> TrainingEnrollment"
+        date session_date
+        string status "PRESENT, ABSENT, LATE, EXCUSED"
+        string remarks
+    }
 ```
 
-> Adjust cardinalities to match your actual `models.py` if they differ.
+### Entity Dictionary & Integrity Rules
+
+| Model | App | Primary Purpose | Key Constraints & Integrity Rules |
+| :--- | :--- | :--- | :--- |
+| **`User`** | `auth` | Django core authentication model for login, session, and role gating. | `username` is unique. Unprivileged students cannot access staff endpoints. |
+| **`Department`** | `accounts` | Academic departments (e.g., BCA, MCA, B.Tech CSE). | `code` and `name` are unique. Protected from deletion if students exist (`on_delete=models.PROTECT`). |
+| **`StudentProfile`** | `accounts` | Official verified student academic dossiers and uploaded resumes. | One-to-One with `User`. `usn` is unique. Protected from deletion if applications or training enrollments exist. |
+| **`Company`** | `recruitment` | Recruiting partner organisations and recruiter contact points. | `name` is unique. Protected from deletion if linked placement drives exist (`on_delete=models.PROTECT`). |
+| **`PlacementDrive`** | `recruitment` | Job postings, hiring specifications, cutoff CGPA, and deadlines. | Linked to `Company` via `PROTECT`. Many-to-many relationship with eligible `Department` records. |
+| **`Application`** | `recruitment` | Student submissions to specific placement drives with application-specific resumes. | `UniqueConstraint(fields=["student", "drive"])` prevents duplicate applications. Protected deletion. |
+| **`InterviewRound`** | `recruitment` | Multi-stage assessments (Aptitude, Technical, HR, GD) and results. | Cascades on application removal (`on_delete=models.CASCADE`). |
+| **`PlacementOffer`** | `recruitment` | Official compensation packages (LPA), offer dates, and acceptance statuses. | One-to-One with `Application`. Protected from deletion (`on_delete=models.PROTECT`). |
+| **`TrainingProgram`** | `training` | Technical bootcamps, mock interviews, and skill-building workshops. | Protected from deletion if student enrollments exist (`on_delete=models.PROTECT`). |
+| **`TrainingEnrollment`** | `training` | Student workshop registrations, attendance percentages, and completion milestones. | `UniqueConstraint(fields=["student", "program"])` prevents duplicate registrations. |
+| **`TrainingAttendance`** | `training` | Day-by-day attendance ledger (Present, Absent, Late, Excused) for training sessions. | `UniqueConstraint(fields=["enrollment", "session_date"])` guarantees 1 record per session per student. Cascades on enrollment delete. |
 
 ---
 
@@ -293,6 +427,7 @@ CPMS/
 ├── templates/
 │   ├── admin_portal/          # applications, companies, drives, students, training
 │   ├── accounts/              # Student login, register, profile, dashboard
+│   ├── includes/              # Reusable layout components (footer.html)
 │   ├── legal/                 # Privacy, Terms, DPDP notice
 │   ├── recruitment/           # Student-facing drives and apply pages
 │   ├── training/              # Student-facing training catalogue

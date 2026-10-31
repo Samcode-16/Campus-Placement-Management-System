@@ -1,0 +1,175 @@
+{% load static %}
+<footer class="page-footer" role="contentinfo">
+    <div class="footer-container">
+        <div class="footer-grid">
+            <!-- Section 1 – Brand -->
+            <div class="footer-section footer-brand">
+                <a class="footer-brand-title" href="{% url 'home' %}">
+                    <span class="footer-brand-mark">
+                        <img src="{% static 'images/cpms_emblem.png' %}" alt="CPMS Emblem" class="footer-logo-img">
+                    </span>
+                    <span class="footer-brand-text">
+                        <strong>CPMS</strong>
+                        <small>Campus Placement &amp; Recruitment Portal</small>
+                    </span>
+                </a>
+                <p class="footer-description">
+                    Connecting students with career opportunities and simplifying campus recruitment.
+                </p>
+                {% if INSTITUTION_NAME %}
+                <p class="footer-institution">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-graduation-cap"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>
+                    <span>{{ INSTITUTION_NAME }}</span>
+                </p>
+                {% endif %}
+            </div>
+
+            <!-- Section 2 – Quick Links -->
+            <nav class="footer-section footer-nav" aria-label="Quick Links">
+                <h3 class="footer-heading">Quick Links</h3>
+                <ul class="footer-links">
+                    <li>
+                        <a href="{% url 'home' %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-home"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            Home
+                        </a>
+                    </li>
+                    {% if user.is_staff or user.is_superuser %}
+                    <li>
+                        <a href="{% url 'admin_drive_list' %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-briefcase"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg>
+                            Placement Drives
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'admin_application_list' %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+                            Applications
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'admin_training_list' %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                            Training Programs
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'admin_dashboard' %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                            Admin Dashboard
+                        </a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <a href="{% url 'recruitment:placement_drives' %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-briefcase"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg>
+                            Placement Drives
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'recruitment:my_applications' %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+                            My Applications
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'training:training_programs' %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                            Training Programs
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'accounts:student_profile' %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            My Profile
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+
+            <!-- Section 3 – Resources -->
+            <nav class="footer-section footer-nav" aria-label="Resources">
+                <h3 class="footer-heading">Resources</h3>
+                <ul class="footer-links">
+                    <li>
+                        <a href="{% url 'privacy' %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                            Privacy Policy
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'terms' %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-check"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m9 15 2 2 4-4"/></svg>
+                            Terms &amp; Conditions
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'dpdp' %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lock"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            DPDP Act Notice
+                        </a>
+                    </li>
+                    <li>
+                        <a href="mailto:{{ PRIVACY_CONTACT_EMAIL }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                            Help &amp; Support
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Section 4 – Contact -->
+            <div class="footer-section footer-contact">
+                <h3 class="footer-heading">Contact</h3>
+                <div class="footer-contact-details">
+                    <p class="footer-contact-title">
+                        <strong>Placement Cell</strong>
+                        {% if GRIEVANCE_OFFICER %}
+                        <span class="footer-contact-officer">{{ GRIEVANCE_OFFICER }}</span>
+                        {% endif %}
+                    </p>
+
+                    {% if INSTITUTION_NAME %}
+                    <p class="footer-contact-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M8 14h.01"/><path d="M16 14h.01"/></svg>
+                        <span>{{ INSTITUTION_NAME }}</span>
+                    </p>
+                    {% endif %}
+
+                    {% if PRIVACY_CONTACT_EMAIL %}
+                    <p class="footer-contact-item">
+                        <a class="pf-help footer-email-link" href="mailto:{{ PRIVACY_CONTACT_EMAIL }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                            Contact placement office
+                        </a>
+                    </p>
+                    {% endif %}
+
+                    {% if INSTITUTION_ADDRESS %}
+                    <address class="footer-contact-item footer-address">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+                        <span>{{ INSTITUTION_ADDRESS }}</span>
+                    </address>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Subtle Divider & Bottom Bar -->
+        <div class="footer-bottom-bar">
+            <div class="footer-bottom-inner">
+                <div class="footer-bottom-left">
+                    <p class="footer-copy">&copy; 2026 CPMS &ndash; Campus Placement &amp; Recruitment Portal.</p>
+                    <p class="footer-tagline">Developed as an academic Full Stack Development Project.</p>
+                </div>
+                <div class="footer-bottom-right">
+                    <a href="#top" class="back-to-top" title="Scroll to top of page">
+                        <span>Back to Top</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>

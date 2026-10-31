@@ -13,7 +13,7 @@
 </head>
 <body>
     {% with page=request.resolver_match.url_name %}
-    <div class="app-shell">
+    <div class="app-shell" id="top">
         <aside class="sidebar">
             <a class="brand" href="/">
                 <span class="brand-mark">
@@ -85,15 +85,7 @@
                 {% block content %}{% endblock %}
             </section>
 
-            <footer class="page-footer">
-                <p>&copy; {% now "Y" %} {{ INSTITUTION_NAME }}. CPMS Campus Placement Portal.</p>
-                <nav aria-label="Footer">
-                    <a href="{% url 'privacy' %}">Privacy Policy</a>
-                    <a href="{% url 'terms' %}">Terms</a>
-                    <a href="{% url 'dpdp' %}">DPDP notice</a>
-                    <a class="pf-help" href="mailto:{{ PRIVACY_CONTACT_EMAIL }}">Contact placement office</a>
-                </nav>
-            </footer>
+            {% include "includes/footer.html" %}
         </main>
     </div>
     {% endwith %}
