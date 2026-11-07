@@ -23,6 +23,9 @@ __pycache__/
 media/
 !media/resumes/Anjali_Hegde_Resume_Classic_Format.pdf
 
+# Static files collected for production
+staticfiles/
+
 # IDE and OS
 .vscode/
 .idea/

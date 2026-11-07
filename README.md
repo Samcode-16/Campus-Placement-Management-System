@@ -498,6 +498,25 @@ python manage.py runserver
 
 ---
 
+## Deploying to Render
+
+The repository includes a ready-to-use [`render.yaml`](render.yaml) blueprint and [`build.sh`](build.sh) script.
+
+1. **Sign in to Render:** Go to [render.com](https://render.com) and log in with your GitHub account.
+2. **New Web Service:**
+   - Click **New +** > **Web Service**.
+   - Select your repository `Campus-Placement-Management-System`.
+   - **Build Command:** `./build.sh`
+   - **Start Command:** `gunicorn config.wsgi:application`
+3. **Environment Variables:**
+   - `DATABASE_URL`: Paste your Supabase PostgreSQL connection string.
+   - `SECRET_KEY`: Set a secure random string (or Render will generate one automatically if using Blueprints).
+   - `DEBUG`: `False`
+   - `PYTHON_VERSION`: `3.13.0`
+4. **Deploy:** Click **Deploy Web Service**. Render will run migrations against Supabase, compress static assets with WhiteNoise, and launch with Gunicorn over HTTPS!
+
+---
+
 ## Demo Credentials
 
 Created by `python manage.py seed_data`. **For local demos only. Never deploy with these accounts.**
