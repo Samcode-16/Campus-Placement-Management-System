@@ -9,84 +9,86 @@
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=4">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=5">
 </head>
 <body>
     {% with page=request.resolver_match.url_name %}
     <div class="app-shell" id="top">
-        <aside class="sidebar">
-            <a class="brand" href="/">
-                <span class="brand-mark">
-                    <img src="{% static 'images/cpms_emblem.png' %}" alt="CPMS" class="brand-logo-img">
-                </span>
-                <span>
-                    <strong>CPMS</strong>
-                    <small>Campus Placement</small>
-                </span>
-            </a>
-
-            {% if user.is_staff or user.is_superuser %}
-            <p class="nav-label">Administrator</p>
-            <nav class="navigation">
-                <a data-icon="grid" class="nav-link {% if page == 'staff_dashboard' or page == 'admin_dashboard' %}active{% endif %}" href="{% url 'admin_dashboard' %}">Dashboard</a>
-                <a data-icon="user" class="nav-link {% if 'admin_student' in page %}active{% endif %}" href="{% url 'admin_student_list' %}">Manage Students</a>
-                <a data-icon="briefcase" class="nav-link {% if 'admin_company' in page %}active{% endif %}" href="{% url 'admin_company_list' %}">Manage Companies</a>
-                <a data-icon="briefcase" class="nav-link {% if 'admin_drive' in page or page == 'placement_drives' or page == 'drive_detail' %}active{% endif %}" href="{% url 'admin_drive_list' %}">Placement Drives</a>
-                <a data-icon="file" class="nav-link {% if 'admin_application' in page or page == 'manage_applications' %}active{% endif %}" href="{% url 'admin_application_list' %}">Applications</a>
-                <a data-icon="book" class="nav-link {% if 'admin_training' in page %}active{% endif %}" href="{% url 'admin_training_list' %}">Training Programs</a>
-                <form method="post" action="{% url 'accounts:logout' %}" style="display: block; width: 100%; margin-top: 4px;">
-                    {% csrf_token %}
-                    <button type="submit" class="nav-link" data-icon="shield" style="width: 100%; text-align: left; background: none; border: none; cursor: pointer; color: inherit; font: inherit; padding: 10px 14px;">
-                        Logout
-                    </button>
-                </form>
-            </nav>
-            {% else %}
-            <p class="nav-label">Student</p>
-            <nav class="navigation">
-                <a data-icon="grid" class="nav-link {% if page == 'student_dashboard' %}active{% endif %}" href="{% url 'accounts:student_dashboard' %}">My Dashboard</a>
-                <a data-icon="briefcase" class="nav-link {% if page == 'placement_drives' or page == 'drive_detail' or page == 'apply' %}active{% endif %}" href="{% url 'recruitment:placement_drives' %}">Placement Drives</a>
-                <a data-icon="file" class="nav-link {% if page == 'my_applications' %}active{% endif %}" href="{% url 'recruitment:my_applications' %}">My Applications</a>
-                <a data-icon="book" class="nav-link {% if page == 'training_programs' %}active{% endif %}" href="{% url 'training:training_programs' %}">Training Programs</a>
-                <a data-icon="user" class="nav-link {% if page == 'student_profile' %}active{% endif %}" href="{% url 'accounts:student_profile' %}">My Profile</a>
-            </nav>
-            {% endif %}
-
-            <div class="sidebar-footer">
-                <span class="status-dot"></span>
-                <span>Placement Management System</span>
-            </div>
-        </aside>
-
-        <main class="main-content">
-            <header class="topbar">
-                <h1>{% block page_heading %}Dashboard{% endblock %}</h1>
-                <div class="user-chip">
-                    <span class="avatar" aria-hidden="true">{{ user.username|slice:":1"|upper }}</span>
-                    <span>
-                        <strong>{{ user.get_full_name|default:user.username }}</strong>
-                        <small>{% if user.is_staff or user.is_superuser %}Administrator{% else %}Student{% endif %}</small>
+        <div class="app-body">
+            <aside class="sidebar" aria-label="Main Navigation">
+                <a class="brand" href="/">
+                    <span class="brand-mark">
+                        <img src="{% static 'images/cpms_emblem.png' %}" alt="CPMS" class="brand-logo-img">
                     </span>
-                    <form method="post" action="{% url 'accounts:logout' %}" class="logout-form">
+                    <span>
+                        <strong>CPMS</strong>
+                        <small>Campus Placement</small>
+                    </span>
+                </a>
+
+                {% if user.is_staff or user.is_superuser %}
+                <p class="nav-label">Administrator</p>
+                <nav class="navigation">
+                    <a data-icon="grid" class="nav-link {% if page == 'staff_dashboard' or page == 'admin_dashboard' %}active{% endif %}" href="{% url 'admin_dashboard' %}">Dashboard</a>
+                    <a data-icon="user" class="nav-link {% if 'admin_student' in page %}active{% endif %}" href="{% url 'admin_student_list' %}">Manage Students</a>
+                    <a data-icon="briefcase" class="nav-link {% if 'admin_company' in page %}active{% endif %}" href="{% url 'admin_company_list' %}">Manage Companies</a>
+                    <a data-icon="briefcase" class="nav-link {% if 'admin_drive' in page or page == 'placement_drives' or page == 'drive_detail' %}active{% endif %}" href="{% url 'admin_drive_list' %}">Placement Drives</a>
+                    <a data-icon="file" class="nav-link {% if 'admin_application' in page or page == 'manage_applications' %}active{% endif %}" href="{% url 'admin_application_list' %}">Applications</a>
+                    <a data-icon="book" class="nav-link {% if 'admin_training' in page %}active{% endif %}" href="{% url 'admin_training_list' %}">Training Programs</a>
+                    <form method="post" action="{% url 'accounts:logout' %}" style="display: block; width: 100%; margin-top: 4px;">
                         {% csrf_token %}
-                        <button type="submit" class="logout-button">Log out</button>
+                        <button type="submit" class="nav-link" data-icon="shield" style="width: 100%; text-align: left; background: none; border: none; cursor: pointer; color: inherit; font: inherit; padding: 10px 14px;">
+                            Logout
+                        </button>
                     </form>
-                </div>
-            </header>
-
-            <section class="page-content">
-                {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %}
-                    <li class="message {{ message.tags }}">{{ message }}</li>
-                    {% endfor %}
-                </ul>
+                </nav>
+                {% else %}
+                <p class="nav-label">Student</p>
+                <nav class="navigation">
+                    <a data-icon="grid" class="nav-link {% if page == 'student_dashboard' %}active{% endif %}" href="{% url 'accounts:student_dashboard' %}">My Dashboard</a>
+                    <a data-icon="briefcase" class="nav-link {% if page == 'placement_drives' or page == 'drive_detail' or page == 'apply' %}active{% endif %}" href="{% url 'recruitment:placement_drives' %}">Placement Drives</a>
+                    <a data-icon="file" class="nav-link {% if page == 'my_applications' %}active{% endif %}" href="{% url 'recruitment:my_applications' %}">My Applications</a>
+                    <a data-icon="book" class="nav-link {% if page == 'training_programs' %}active{% endif %}" href="{% url 'training:training_programs' %}">Training Programs</a>
+                    <a data-icon="user" class="nav-link {% if page == 'student_profile' %}active{% endif %}" href="{% url 'accounts:student_profile' %}">My Profile</a>
+                </nav>
                 {% endif %}
-                {% block content %}{% endblock %}
-            </section>
 
-            {% include "includes/footer.html" %}
-        </main>
+                <div class="sidebar-footer">
+                    <span class="status-dot"></span>
+                    <span>Placement Management System</span>
+                </div>
+            </aside>
+
+            <main class="main-content">
+                <header class="topbar">
+                    <h1>{% block page_heading %}Dashboard{% endblock %}</h1>
+                    <div class="user-chip">
+                        <span class="avatar" aria-hidden="true">{{ user.username|slice:":1"|upper }}</span>
+                        <span>
+                            <strong>{{ user.get_full_name|default:user.username }}</strong>
+                            <small>{% if user.is_staff or user.is_superuser %}Administrator{% else %}Student{% endif %}</small>
+                        </span>
+                        <form method="post" action="{% url 'accounts:logout' %}" class="logout-form">
+                            {% csrf_token %}
+                            <button type="submit" class="logout-button">Log out</button>
+                        </form>
+                    </div>
+                </header>
+
+                <section class="page-content">
+                    {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                        <li class="message {{ message.tags }}">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    {% block content %}{% endblock %}
+                </section>
+            </main>
+        </div>
+
+        {% include "includes/footer.html" %}
     </div>
     {% endwith %}
     <script src="{% static 'vendor/lucide/lucide.min.js' %}"></script>

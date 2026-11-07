@@ -1,5 +1,6 @@
+import tempfile
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from .models import Department, StudentProfile
@@ -401,6 +402,7 @@ class Phase2AdminDashboardTests(TestCase):
         self.assertContains(r, "24UG101")
 
 
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
 class Phase3StudentAndCompanyManagementTests(TestCase):
     def setUp(self):
         from accounts.models import Department, StudentProfile

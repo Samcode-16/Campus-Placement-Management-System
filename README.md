@@ -14,7 +14,7 @@
   <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5">
   <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3">
   <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript">
-  <img src="https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite3">
+  <img src="https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase PostgreSQL">
   <img src="https://img.shields.io/badge/Tests-87%20Passed-10b981?style=for-the-badge" alt="87 Tests Passed">
 </p>
 
@@ -174,7 +174,7 @@ Open <http://127.0.0.1:8000/> and sign in with the [demo credentials](#demo-cred
 | **Backend** | Python 3.13, Django 6.1 | MVT architecture, ORM, URL routing, middleware |
 | **Frontend** | HTML5, CSS3 | Accessible templates, Navy & Teal design system, responsive grids, SVG charts |
 | **Scripting** | Vanilla JavaScript | Status auto-submit, password toggle, confirmation modals |
-| **Database** | SQLite3 | Foreign keys, cascade protection, unique constraints |
+| **Database** | Supabase (PostgreSQL) | Managed cloud PostgreSQL, connection pooling, SSL encryption |
 | **Auth** | Django Auth, Groups | Session auth, PBKDF2 hashing, `@staff_required` / `@student_required` |
 | **Files** | Django Storage | Resume upload and streaming (`PDF`, `DOC`, `DOCX`) |
 | **VCS** | Git & GitHub | Source control |
@@ -200,7 +200,7 @@ flowchart TD
 
     subgraph data ["Data and Storage Layer"]
         ORM["Django ORM"]
-        DB[("SQLite3")]
+        DB[("Supabase<br/>PostgreSQL")]
         Media["Media Storage<br/>media/resumes/"]
     end
 
@@ -223,7 +223,7 @@ flowchart TD
 Browser -> URL Dispatcher -> Middleware (Session/CSRF/Auth) -> RBAC Decorators -> Views
 Views <-> Forms (ModelForms validation)
 Views <-> Templates -> HTML/CSS/JS back to the browser
-Views <-> Django ORM <-> SQLite3
+Views <-> Django ORM <-> Supabase (PostgreSQL)
 Views <-> Media storage (media/resumes/)
 ```
 
@@ -439,8 +439,8 @@ CPMS/
 │   ├── tests.py
 │   ├── urls.py
 │   └── views.py
+├── .env.example               # Environment variables template
 ├── cpms_logo.png
-├── db.sqlite3                 # Local development database
 ├── manage.py
 └── requirements.txt
 ```
@@ -453,6 +453,7 @@ CPMS/
 
 - Python 3.10+ (3.13 recommended)
 - Git
+- Supabase account & PostgreSQL database URL
 
 ### Steps
 
@@ -468,7 +469,11 @@ python -m venv venv
 # 3. Dependencies
 pip install -r requirements.txt
 
-# 4. Database
+# 4. Environment Variables
+# Copy the template and add your Supabase connection string
+Copy-Item .env.example .env
+
+# 5. Database
 python manage.py migrate
 
 # 5. Roles and demo data (recommended)
